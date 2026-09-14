@@ -1,5 +1,9 @@
 import { getPendingOutboxItems, updateOutboxItem } from './outbox-store';
 import type { OutboxDBSchema } from './outbox-store';
+import { 
+  advanceWorkOrderStatus, blockWorkOrder, resumeWorkOrder, 
+  createWorkOrder, saveCallOutcome 
+} from '@/lib/client-actions';
 
 type MutationFunction = (payload: Record<string, unknown>) => Promise<{ success: boolean; message?: string; data?: unknown }>;
 
@@ -12,8 +16,6 @@ export interface SyncOptions {
 
 const mutationMap: Record<string, MutationFunction> = {
   status_change: async (payload) => {
-    const { advanceWorkOrderStatus, blockWorkOrder, resumeWorkOrder } = await import('@/features/work-orders/server/actions');
-    const { createWorkOrder } = await import('@/features/jobs/server/actions');
     const { type, ...rest } = payload;
     
     if (type === 'advance') {
@@ -35,7 +37,6 @@ const mutationMap: Record<string, MutationFunction> = {
     return { success: false, message: 'Unknown mutation type' };
   },
   call_outcome: async (payload) => {
-    const { saveCallOutcome } = await import('@/features/contacts/server/actions');
     return saveCallOutcome({ contactId: payload.contactId as string, note: payload.note as string });
   },
 };

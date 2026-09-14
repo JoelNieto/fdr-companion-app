@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Capacitor } from '@capacitor/core';
 import { CallMonitor, type CallState, type CallbackID } from 'call-monitor';
-import { getContacts, getContact, saveCallOutcome } from '@/features/contacts/server/actions';
+import { getContacts, getContact, saveCallOutcome } from '@/lib/client-actions';
 import type { CallOutcomeInput, Note } from '@/lib/types';
 import { useFeedback } from '@/lib/feedback';
 import { useOfflineMutation } from '@/features/offline/hooks/use-offline-mutations.hook';

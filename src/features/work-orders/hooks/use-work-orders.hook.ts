@@ -1,7 +1,11 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getWorkOrder, getWorkOrdersByJob, getMyWorkOrders, advanceWorkOrderStatus, blockWorkOrder, resumeWorkOrder, addPhotoToWorkOrder } from '@/features/work-orders/server/actions';
+import { 
+  getWorkOrder, getWorkOrdersByJob, getMyWorkOrders, 
+  advanceWorkOrderStatus, blockWorkOrder, resumeWorkOrder, 
+  addPhotoToWorkOrder, getWorkOrdersByAssignee, getWorkOrdersByAssigneeAndStatus
+} from '@/lib/client-actions';
 import type { WorkOrder, AdvanceStatusInput, BlockWorkOrderInput, ResumeWorkOrderInput } from '@/lib/types';
 import { useFeedback } from '@/lib/feedback';
 import { useOfflineMutation } from '@/features/offline/hooks/use-offline-mutations.hook';

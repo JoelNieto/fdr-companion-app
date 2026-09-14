@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getJobs, getJob, getJobsByContact, getJobsByStatus, createWorkOrder } from '@/features/jobs/server/actions';
+import { getJobs, getJob, getJobsByContact, getJobsByStatus, createWorkOrder } from '@/lib/client-actions';
 import type { Job, CreateWorkOrderInput } from '@/lib/types';
 import { useFeedback } from '@/lib/feedback';
 import { useOfflineMutation } from '@/features/offline/hooks/use-offline-mutations.hook';

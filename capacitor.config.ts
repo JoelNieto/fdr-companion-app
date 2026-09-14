@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Field Companion',
   webDir: 'out',
   server: {
-    url: 'http://localhost:3000',
+    url: 'http://192.168.40.26:3000',
     cleartext: true,
   },
   ios: {

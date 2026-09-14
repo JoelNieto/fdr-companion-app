@@ -6,6 +6,13 @@ interface WorkOrderDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+export async function generateStaticParams() {
+  const workOrders = dataStore.getWorkOrders();
+  return workOrders.map((wo) => ({
+    id: wo.id,
+  }));
+}
+
 export default async function WorkOrderDetailPage({ params }: WorkOrderDetailPageProps) {
   const { id } = await params;
   

@@ -10,23 +10,23 @@ let package = Package(
         .library(
             name: "CallMonitor",
             targets: ["CallMonitorPlugin"]
-        ),
+        )
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-spm.git", branch: "main"),
+        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", branch: "main")
     ],
     targets: [
         .target(
             name: "CallMonitorPlugin",
             dependencies: [
-                .product(name: "Capacitor", package: "capacitor-spm"),
+                .product(name: "Capacitor", package: "capacitor-swift-pm")
             ],
             path: "src/ios",
             sources: ["CallMonitorPlugin.swift"],
             publicHeadersPath: "include",
             cSettings: [
-                .headerSearchPath("."),
+                .headerSearchPath(".")
             ]
-        ),
+        )
     ]
 )

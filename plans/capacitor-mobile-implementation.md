@@ -101,7 +101,7 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 ### 5. Integration & Hook Updates
 
 - [x] Update `useOnlineStatus` hook → use Network plugin on native
-- [ ] Update `useCallOutcome` → integrate `CallMonitor` plugin for native call flow
+- [x] Update `useCallOutcome` → integrate `CallMonitor` plugin for native call flow
 - [x] Update camera logic in `WorkOrderDetail` → use Camera plugin
 - [x] Update `PushProvider` → use Local Notifications on native
 - [x] Add deep link handler in `app/layout.tsx` for `fieldcompanion://` URLs

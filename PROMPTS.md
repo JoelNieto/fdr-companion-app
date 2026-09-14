@@ -332,4 +332,21 @@ Install @capacitor/preferences for secure storage abstraction; create SecureStor
 **Prompt:**
 ```
 Create PROMPTS.md auto-capture mechanism with .kilo/hooks/capture-prompt.js and .sh wrapper capturing timestamp, tool+model, verbatim prompt; commit with work
+```## 2026-09-14T19:07:01.891Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
 ```
+Test if prompts hook works
+```
+
+## 2026-09-14T19:10:25.205Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Run the hook after every prompt
+```
+

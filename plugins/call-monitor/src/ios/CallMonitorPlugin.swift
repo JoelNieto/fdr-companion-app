@@ -16,7 +16,7 @@ public class CallMonitorPlugin: CAPPlugin, CAPBridgedPlugin {
     private var activeCallUUID: UUID?
     private var targetPhoneNumber: String?
     
-    @objc func startCall(_ call: CAPPluginCall) {
+    @objc public func startCall(_ call: CAPPluginCall) {
         guard let phoneNumber = call.getString("phoneNumber") else {
             call.reject("Missing phoneNumber parameter")
             return
@@ -52,7 +52,7 @@ public class CallMonitorPlugin: CAPPlugin, CAPBridgedPlugin {
         }
     }
     
-    @objc func addListener(_ call: CAPPluginCall) {
+    @objc public override func addListener(_ call: CAPPluginCall) {
         // Listener registration is handled by Capacitor's event system
         // We just need to ensure the observer is active
         if callObserver == nil {
@@ -62,7 +62,7 @@ public class CallMonitorPlugin: CAPPlugin, CAPBridgedPlugin {
         call.resolve(["callbackId": UUID().uuidString])
     }
     
-    @objc func removeAllListeners(_ call: CAPPluginCall) {
+    @objc public override func removeAllListeners(_ call: CAPPluginCall) {
         callObserver?.setDelegate(nil, queue: nil)
         callObserver = nil
         activeCallUUID = nil

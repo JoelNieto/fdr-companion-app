@@ -80,9 +80,9 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 
 #### 4.2 Camera Plugin (`@capacitor/camera`)
 - [x] Install: `pnpm add @capacitor/camera`
-- [ ] Replace web file input with `Camera.getPhoto({ quality: 90, allowEditing: false, resultType: CameraResultType.DataUrl })`
-- [ ] Handle permission denied path (show permission explainer)
-- [ ] Update `PhotoGrid` and `WorkOrderDetail` to use Camera plugin on native
+- [x] Replace web file input with `Camera.getPhoto({ quality: 90, allowEditing: false, resultType: CameraResultType.DataUrl })`
+- [x] Handle permission denied path (show permission explainer)
+- [x] Update `PhotoGrid` and `WorkOrderDetail` to use Camera plugin on native
 
 #### 4.3 Local Notifications Plugin (`@capacitor/local-notifications`)
 - [x] Install: `pnpm add @capacitor/local-notifications`
@@ -102,7 +102,7 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 
 - [x] Update `useOnlineStatus` hook → use Network plugin on native
 - [ ] Update `useCallOutcome` → integrate `CallMonitor` plugin for native call flow
-- [ ] Update camera logic in `WorkOrderDetail` → use Camera plugin
+- [x] Update camera logic in `WorkOrderDetail` → use Camera plugin
 - [ ] Update `PushProvider` → use Local Notifications on native
 - [ ] Add deep link handler in `app/layout.tsx` for `fieldcompanion://` URLs
 

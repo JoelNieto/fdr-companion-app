@@ -22,7 +22,7 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
   - `webDir: 'out'` (static export)
   - `server: { url: 'http://localhost:3000', cleartext: true }` (dev fallback)
   - `ios: { scheme: 'fieldcompanion' }` (deep linking)
-  - `plugins` config for Camera, Network, LocalNotifications, SecureStorage
+  - `plugins` config for Camera, Network, LocalNotifications, Preferences
 - [x] Add Capacitor scripts to `package.json`:
   - `cap:sync` → `npx cap sync`
   - `cap:ios` → `npx cap open ios` (or `npx cap run ios`)
@@ -93,10 +93,10 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [x] Update `PushProvider` to use Local Notifications on native
 - [x] Permission handling: request on app start, show hint if denied
 
-#### 4.4 Secure Storage Plugin (`@capacitor/secure-storage`) - PLUS
-- [ ] Install: `pnpm add @capacitor/secure-storage`
-- [ ] Create store abstraction (interface + native/web implementations)
-- [ ] Use for any tokens/secrets (future-proofing)
+#### 4.4 Secure Storage Plugin (`@capacitor/preferences`) - PLUS
+- [x] Install: `pnpm add @capacitor/preferences` (used instead of @capacitor/secure-storage which doesn't exist)
+- [x] Create store abstraction (interface + native/web implementations) in `src/lib/storage/secure-store.ts`
+- [x] Use for any tokens/secrets (future-proofing)
 
 ### 5. Integration & Hook Updates
 
@@ -197,7 +197,7 @@ All key decisions resolved via user answers.
 | `@capacitor/network` | Connectivity detection | ^8.0.0 |
 | `@capacitor/camera` | Photo capture | ^8.0.0 |
 | `@capacitor/local-notifications` | Push notifications | ^8.0.0 |
-| `@capacitor/secure-storage` | Secure token storage | ^8.0.0 |
+| `@capacitor/preferences` | Key-value storage | ^8.0.0 |
 
 ---
 

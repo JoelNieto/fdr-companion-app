@@ -28,6 +28,15 @@
   <true/>
   <key>NSCameraUsageDescription</key>
   <string>This app needs camera access to capture photo evidence for work orders.</string>
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>fieldcompanion</string>
+      </array>
+    </dict>
+  </array>
   <key>UIApplicationSceneManifest</key>
   <dict>
     <key>UIApplicationSupportsMultipleScenes</key>

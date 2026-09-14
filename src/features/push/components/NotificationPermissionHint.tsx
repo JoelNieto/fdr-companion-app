@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 export function NotificationPermissionHint() {
   const [showHint, setShowHint] = useState(false);
@@ -12,18 +14,37 @@ export function NotificationPermissionHint() {
     
     if (typeof window === 'undefined') return;
     
-    // Check if notifications are supported and permission is denied
-    if ('Notification' in window && Notification.permission === 'denied') {
-      setShowHint(true);
-    }
+    const checkPermission = async () => {
+      if (Capacitor.isNativePlatform()) {
+        // On native, check Capacitor Local Notifications permission
+        const perm = await LocalNotifications.checkPermissions();
+        if (perm.display === 'denied') {
+          setShowHint(true);
+        } else if (perm.display === 'prompt') {
+          // Show hint after a delay on first visit
+          const hasSeenHint = localStorage.getItem('notification-hint-dismissed');
+          if (!hasSeenHint) {
+            const timer = setTimeout(() => setShowHint(true), 5000);
+            return () => clearTimeout(timer);
+          }
+        }
+      } else {
+        // Web fallback: check Notification API
+        if ('Notification' in window && Notification.permission === 'denied') {
+          setShowHint(true);
+        }
+        
+        // Also check if we should show hint on first load
+        const hasSeenHint = localStorage.getItem('notification-hint-dismissed');
+        if (!hasSeenHint && 'Notification' in window && Notification.permission === 'default') {
+          // Show hint after a delay on first visit
+          const timer = setTimeout(() => setShowHint(true), 5000);
+          return () => clearTimeout(timer);
+        }
+      }
+    };
     
-    // Also check if we should show hint on first load
-    const hasSeenHint = localStorage.getItem('notification-hint-dismissed');
-    if (!hasSeenHint && 'Notification' in window && Notification.permission === 'default') {
-      // Show hint after a delay on first visit
-      const timer = setTimeout(() => setShowHint(true), 5000);
-      return () => clearTimeout(timer);
-    }
+    checkPermission();
   }, []);
   
   if (!showHint) return null;
@@ -31,6 +52,20 @@ export function NotificationPermissionHint() {
   const handleDismiss = () => {
     setShowHint(false);
     localStorage.setItem('notification-hint-dismissed', 'true');
+  };
+  
+  const handleEnable = async () => {
+    if (Capacitor.isNativePlatform()) {
+      const perm = await LocalNotifications.requestPermissions();
+      if (perm.display === 'granted') {
+        handleDismiss();
+      }
+    } else {
+      if ('Notification' in window) {
+        await Notification.requestPermission();
+        handleDismiss();
+      }
+    }
   };
   
   return (
@@ -60,12 +95,7 @@ export function NotificationPermissionHint() {
             Not now
           </button>
           <button
-            onClick={async () => {
-              if ('Notification' in window) {
-                await Notification.requestPermission();
-                handleDismiss();
-              }
-            }}
+            onClick={handleEnable}
             className="px-3 py-1 text-xs bg-amber-600 text-white rounded hover:bg-amber-700"
           >
             Enable

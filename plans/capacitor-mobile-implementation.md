@@ -86,12 +86,12 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 
 #### 4.3 Local Notifications Plugin (`@capacitor/local-notifications`)
 - [x] Install: `pnpm add @capacitor/local-notifications`
-- [ ] Implement assignment notification:
+- [x] Implement assignment notification:
   - Schedule local notification on work order creation/assignment
   - Handle `localNotificationActionPerformed` for deep link
   - Deep link: `fieldcompanion://work-orders/{id}`
-- [ ] Update `PushProvider` to use Local Notifications on native
-- [ ] Permission handling: request on app start, show hint if denied
+- [x] Update `PushProvider` to use Local Notifications on native
+- [x] Permission handling: request on app start, show hint if denied
 
 #### 4.4 Secure Storage Plugin (`@capacitor/secure-storage`) - PLUS
 - [ ] Install: `pnpm add @capacitor/secure-storage`
@@ -103,8 +103,8 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [x] Update `useOnlineStatus` hook → use Network plugin on native
 - [ ] Update `useCallOutcome` → integrate `CallMonitor` plugin for native call flow
 - [x] Update camera logic in `WorkOrderDetail` → use Camera plugin
-- [ ] Update `PushProvider` → use Local Notifications on native
-- [ ] Add deep link handler in `app/layout.tsx` for `fieldcompanion://` URLs
+- [x] Update `PushProvider` → use Local Notifications on native
+- [x] Add deep link handler in `app/layout.tsx` for `fieldcompanion://` URLs
 
 ### 6. iOS Project Configuration
 - [ ] Open `ios/App/App.xcworkspace` in Xcode

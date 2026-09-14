@@ -5,6 +5,7 @@ import { getJobs, getJob, getJobsByContact, getJobsByStatus, createWorkOrder } f
 import type { Job, CreateWorkOrderInput } from '@/lib/types';
 import { useFeedback } from '@/lib/feedback';
 import { useOfflineMutation } from '@/features/offline/hooks/use-offline-mutations.hook';
+import { scheduleAssignmentNotification } from '@/features/push/components/PushProvider';
 
 export function useJobs() {
   return useQuery({
@@ -70,12 +71,21 @@ export function useCreateWorkOrder(jobId: string) {
     outboxType: 'status_change',
     getDescription: (input) => `Create work order: ${input.title}`,
     getPayload: (input) => ({ ...input, type: 'create', jobId }),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['jobs', jobId] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });
       queryClient.invalidateQueries({ queryKey: ['work-orders', 'my'] });
       showSuccess('Work order created successfully');
+      
+      // Schedule local notification for assignment
+      if (data?.workOrder) {
+        scheduleAssignmentNotification({
+          id: data.workOrder.id,
+          title: data.workOrder.title,
+          status: data.workOrder.status,
+        });
+      }
     },
     onError: (error: Error) => {
       showError(error.message);

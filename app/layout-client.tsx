@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Providers } from './providers';
 import { Header } from '@/components/layout/Header';
 import { Navigation } from '@/components/layout/Navigation';
@@ -8,8 +9,33 @@ import { OfflineIndicator } from '@/features/offline/components/OfflineIndicator
 import { OutboxIndicator } from '@/features/offline/components/OutboxIndicator';
 import { PushProvider } from '@/features/push/components/PushProvider';
 import { ReactNode } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
+import { useRouter } from 'next/navigation';
 
 export function LayoutClient({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  
+  useEffect(() => {
+    // Handle deep links on native platforms
+    if (Capacitor.isNativePlatform()) {
+      const handleAppUrlOpen = (event: { url: string }) => {
+        const url = event.url;
+        // Handle fieldcompanion://work-orders/{id}
+        if (url.startsWith('fieldcompanion://work-orders/')) {
+          const workOrderId = url.replace('fieldcompanion://work-orders/', '');
+          router.push(`/work-orders/${workOrderId}`);
+        }
+      };
+      
+      const listener = App.addListener('appUrlOpen', handleAppUrlOpen);
+      
+      return () => {
+        listener.then((cb) => cb.remove());
+      };
+    }
+  }, [router]);
+  
   return (
     <Providers>
       <PushProvider>

@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "capacitor-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ionic-team/capacitor-spm.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b35087f193848c7aeb3516afb035533a8b3f4daf"
+      }
+    }
+  ],
+  "version" : 2
+}

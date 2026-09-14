@@ -14,16 +14,16 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 ## Task List
 
 ### 1. Capacitor Setup & Configuration
-- [ ] Install Capacitor 8 core + CLI + iOS + Android
-- [ ] Initialize Capacitor project (`npx cap init`)
-- [ ] Add iOS platform (`npx cap add ios`)
-- [ ] Add Android platform (`npx cap add android`) - for future
-- [ ] Configure `capacitor.config.ts`:
+- [x] Install Capacitor 8 core + CLI + iOS + Android
+- [x] Initialize Capacitor project (`npx cap init`)
+- [x] Add iOS platform (`npx cap add ios`)
+- [x] Add Android platform (`npx cap add android`) - for future
+- [x] Configure `capacitor.config.ts`:
   - `webDir: 'out'` (static export)
   - `server: { url: 'http://localhost:3000', cleartext: true }` (dev fallback)
   - `ios: { scheme: 'fieldcompanion' }` (deep linking)
   - `plugins` config for Camera, Network, LocalNotifications, SecureStorage
-- [ ] Add Capacitor scripts to `package.json`:
+- [x] Add Capacitor scripts to `package.json`:
   - `cap:sync` → `npx cap sync`
   - `cap:ios` → `npx cap open ios` (or `npx cap run ios`)
   - `cap:android` → `npx cap run android`
@@ -31,15 +31,15 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
   - `build:mobile` → `next build && npx cap sync`
 
 ### 2. Next.js Static Export Configuration
-- [ ] Update `next.config.ts` for static export:
+- [x] Update `next.config.ts` for static export:
   - `output: 'export'`
   - `images: { unoptimized: true }`
   - `trailingSlash: true`
-- [ ] Update `capacitor.config.ts` to point to `out/` directory
-- [ ] Verify build works: `pnpm build && npx cap sync`
+- [x] Update `capacitor.config.ts` to point to `out/` directory
+- [x] Verify build works: `pnpm build && npx cap sync`
 
 ### 3. Custom Local Plugin: `call-monitor` (iOS Swift)
-- [ ] Create plugin structure in `plugins/call-monitor/`:
+- [x] Create plugin structure in `plugins/call-monitor/`:
   - `call-monitor.podspec`
   - `src/ios/CallMonitorPlugin.swift`
   - `src/ios/CallMonitorPlugin.m` (if needed)
@@ -47,12 +47,12 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
   - `definitions.ts` (TypeScript types)
   - `package.json`
   - `capacitor.config.json` (plugin config)
-- [ ] **Swift Implementation** (`CallMonitorPlugin.swift`):
+- [x] **Swift Implementation** (`CallMonitorPlugin.swift`):
   - Use `CXCallObserver` to monitor call state
   - Methods: `startCall(phoneNumber: String)`, `addListener('callState', ...)`
   - Events: `started`, `ended`, `failed`
   - Permission: `NSUserActivityTypePhone` in Info.plist
-- [ ] **TypeScript API** (`definitions.ts`):
+- [x] **TypeScript API** (`definitions.ts`):
   ```typescript
   export interface CallMonitorPlugin {
     startCall(options: { phoneNumber: string }): Promise<void>;
@@ -61,31 +61,31 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
   }
   export type CallState = { state: 'started' | 'ended' | 'failed'; phoneNumber?: string };
   ```
-- [ ] **Web Fallback** (`src/web.ts`):
+- [x] **Web Fallback** (`src/web.ts`):
   - `startCall` → `window.location.href = 'tel:' + phoneNumber`
   - Simulated `ended` event on `window.focus` after 1s delay
   - Same TypeScript API
-- [ ] Register plugin in `capacitor.config.ts` → `plugins: { CallMonitor: { ios: { ... } } }`
-- [ ] Add to iOS `Info.plist`:
+- [x] Register plugin in `capacitor.config.ts` → `plugins: { CallMonitor: { ios: { ... } } }`
+- [x] Add to iOS `Info.plist`:
   - `NSUserActivityTypePhone` for call capability
   - `UIBackgroundModes` with `voip` if needed
 
 ### 4. Official Capacitor Plugins Integration
 
 #### 4.1 Network Plugin (`@capacitor/network`)
-- [ ] Install: `pnpm add @capacitor/network`
-- [ ] Replace web `navigator.onLine` with `Network.addListener('networkStatusChange', ...)`
-- [ ] Update `useOnlineStatus` hook to use Capacitor Network on native
-- [ ] Keep web fallback using `navigator.onLine`
+- [x] Install: `pnpm add @capacitor/network`
+- [x] Replace web `navigator.onLine` with `Network.addListener('networkStatusChange', ...)`
+- [x] Update `useOnlineStatus` hook to use Capacitor Network on native
+- [x] Keep web fallback using `navigator.onLine`
 
 #### 4.2 Camera Plugin (`@capacitor/camera`)
-- [ ] Install: `pnpm add @capacitor/camera`
+- [x] Install: `pnpm add @capacitor/camera`
 - [ ] Replace web file input with `Camera.getPhoto({ quality: 90, allowEditing: false, resultType: CameraResultType.DataUrl })`
 - [ ] Handle permission denied path (show permission explainer)
 - [ ] Update `PhotoGrid` and `WorkOrderDetail` to use Camera plugin on native
 
 #### 4.3 Local Notifications Plugin (`@capacitor/local-notifications`)
-- [ ] Install: `pnpm add @capacitor/local-notifications`
+- [x] Install: `pnpm add @capacitor/local-notifications`
 - [ ] Implement assignment notification:
   - Schedule local notification on work order creation/assignment
   - Handle `localNotificationActionPerformed` for deep link
@@ -100,7 +100,7 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 
 ### 5. Integration & Hook Updates
 
-- [ ] Update `useOnlineStatus` hook → use Network plugin on native
+- [x] Update `useOnlineStatus` hook → use Network plugin on native
 - [ ] Update `useCallOutcome` → integrate `CallMonitor` plugin for native call flow
 - [ ] Update camera logic in `WorkOrderDetail` → use Camera plugin
 - [ ] Update `PushProvider` → use Local Notifications on native
@@ -114,9 +114,9 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [ ] Test build: `npx cap run ios` (simulator)
 
 ### 7. Android Project (Minimal - for future)
-- [ ] Add Android platform: `npx cap add android`
+- [x] Add Android platform: `npx cap add android`
 - [ ] Configure `android/` project (minimal - no native impl yet)
-- [ ] Verify `cap sync` works for both platforms
+- [x] Verify `cap sync` works for both platforms
 
 ### 8. ADRs (Decision Records)
 - [ ] `docs/decisions/01-push-transport.md` → Local Notifications

@@ -108,3 +108,120 @@ Refactor [component/hook] to:
 Set up Capacitor 8 with iOS and Android platforms
 ```
 
+## 2026-09-14T14:50:54.854Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Initialize Capacitor 8 project with iOS and Android platforms
+```
+
+## 2026-09-14T14:51:29.638Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Configure next.config.ts for static export with output: export, images.unoptimized: true, trailingSlash: true
+```
+
+## 2026-09-14T14:51:50.613Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Create call-monitor custom Capacitor plugin with Swift implementation using CXCallObserver for iOS call state monitoring (started, ended, failed events)
+```
+
+## 2026-09-14T14:52:17.514Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Implement web fallback for call-monitor plugin using tel: links and window.focus simulation for ended event
+```
+
+## 2026-09-14T14:52:46.690Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Add NSUserActivityTypePhone to iOS Info.plist for call capability and register call-monitor plugin in capacitor.config.ts
+```
+
+## 2026-09-14T14:52:55.879Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Integrate @capacitor/network plugin into useOnlineStatus hook with native Network.addListener and web navigator.onLine fallback
+```
+
+## 2026-09-14T14:53:06.373Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Integrate @capacitor/camera plugin into WorkOrderDetail using Camera.getPhoto with quality: 90, DataUrl result type, and CameraSource.Camera on native; web fallback with file input
+```
+
+## 2026-09-14T14:53:13.623Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Add NSCameraUsageDescription to iOS Info.plist and update CameraPermissionExplainer with platform-specific guidance
+```
+
+## 2026-09-14T14:53:35.115Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Integrate @capacitor/local-notifications for push: schedule assignment notification on work order creation, handle localNotificationActionPerformed for deep link fieldcompanion://work-orders/{id}
+```
+
+## 2026-09-14T14:54:15.046Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Update PushProvider to use LocalNotifications on native with permission request, update useCreateWorkOrder to schedule notification, add deep link handler in LayoutClient using @capacitor/app
+```
+
+## 2026-09-14T14:54:59.397Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Add CFBundleURLTypes to iOS Info.plist and intent-filter to Android AndroidManifest.xml for fieldcompanion:// deep link scheme
+```
+
+## 2026-09-14T14:56:22.035Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Install @capacitor/preferences for secure storage abstraction; create SecureStore interface with NativeSecureStore (Preferences) and WebSecureStore (localStorage) implementations
+```
+
+## 2026-09-14T14:56:54.530Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Create PROMPTS.md auto-capture mechanism with .kilo/hooks/capture-prompt.js and .sh wrapper capturing timestamp, tool+model, verbatim prompt; commit with work
+```
+

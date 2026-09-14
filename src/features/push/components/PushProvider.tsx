@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ClientOnly } from '@/components/ui/ClientOnly';
 import { AssignmentBanner } from '@/features/push/components/AssignmentBanner';
+import { NotificationPermissionHint } from '@/features/push/components/NotificationPermissionHint';
 
 interface WorkOrderSummary {
   id: string;
@@ -59,6 +60,7 @@ export function PushProvider({ children }: { children: React.ReactNode }) {
               }}
             />
           )}
+          <NotificationPermissionHint />
         </>
       )}
     </ClientOnly>

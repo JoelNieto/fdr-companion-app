@@ -54,12 +54,8 @@ export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
     );
   }
   
-  if (error || !wo) {
-    return (
-      <div className="p-4 text-center text-red-600 dark:text-red-400" data-testid="wo-detail">
-        Work order not found
-      </div>
-    );
+  if (!wo) {
+    return null;
   }
   
   const handleAdvance = () => {

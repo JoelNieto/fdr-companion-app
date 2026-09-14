@@ -18,13 +18,7 @@ export function OfflineIndicator() {
           if (process.env.NODE_ENV === 'development') {
             return (
               <div className="fixed top-4 right-4 z-50">
-                <button
-                  onClick={() => setSimulatedOffline(true)}
-                  className="bg-yellow-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium shadow-lg hover:bg-yellow-700 transition-colors"
-                  data-testid="simulate-offline-btn"
-                >
-                  Simulate Offline
-                </button>
+               
               </div>
             );
           }

@@ -73,6 +73,8 @@ export function useCreateWorkOrder(jobId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs', jobId] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['work-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['work-orders', 'my'] });
       showSuccess('Work order created successfully');
     },
     onError: (error: Error) => {

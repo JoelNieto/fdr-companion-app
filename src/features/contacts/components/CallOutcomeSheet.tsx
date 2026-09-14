@@ -11,28 +11,28 @@ interface CallOutcomeSheetProps {
   onClose: () => void;
   contactId: string;
   contactName: string;
+  contactPhone: string;
   onSave: () => void;
 }
 
-export function CallOutcomeSheet({ isOpen, onClose, contactId, contactName, onSave }: CallOutcomeSheetProps) {
+export function CallOutcomeSheet({ isOpen, onClose, contactId, contactName, contactPhone, onSave }: CallOutcomeSheetProps) {
   const [note, setNote] = useState('');
   const callOutcome = useCallOutcome();
   
   const isNoteValid = note.trim().length > 0 && note.length <= 500;
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isNoteValid) return;
     
-    callOutcome.mutate(
-      { contactId, note: note.trim() },
-      {
-        onSuccess: () => {
-          setNote('');
-          onSave();
-        },
-      }
-    );
+    try {
+      await callOutcome.saveCallOutcomeAsync({ contactId, note: note.trim() });
+      setNote('');
+      onSave();
+    } catch (error) {
+      // Error is already handled by the hook
+      console.error('Failed to save call outcome:', error);
+    }
   };
   
   return (

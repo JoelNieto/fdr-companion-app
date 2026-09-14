@@ -2,8 +2,14 @@
   "name": "call-monitor",
   "version": "1.0.0",
   "description": "Capacitor plugin to monitor phone call state using CXCallObserver on iOS",
-  "main": "src/web.ts",
-  "types": "definitions.ts",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "default": "./index.ts"
+    }
+  },
   "capacitor": {
     "ios": {
       "src": "src/ios"

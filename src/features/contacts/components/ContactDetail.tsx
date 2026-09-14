@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useContact } from '@/features/contacts/hooks/use-contacts.hook';
 import { useJobsByContact } from '@/features/jobs/hooks/use-jobs.hook';
+import { useCallOutcome } from '@/features/contacts/hooks/use-contacts.hook';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { CallOutcomeSheet } from './CallOutcomeSheet';
@@ -16,6 +17,7 @@ export function ContactDetail({ contactId }: ContactDetailProps) {
   const { data: contact, isLoading, error } = useContact(contactId);
   const { data: jobs } = useJobsByContact(contactId);
   const [showCallOutcome, setShowCallOutcome] = useState(false);
+  const callOutcome = useCallOutcome();
   
   const statusColors: Record<string, 'default' | 'success' | 'warning' | 'danger' | 'info'> = {
     lead: 'default',
@@ -45,11 +47,8 @@ export function ContactDetail({ contactId }: ContactDetailProps) {
   
   const handleCall = () => {
     if (contact.phone) {
-      window.location.href = `tel:${contact.phone}`;
-      // Simulate call ended for web - show outcome sheet after a delay
-      setTimeout(() => {
-        setShowCallOutcome(true);
-      }, 1000);
+      callOutcome.startCall(contact.phone, contact.id, '');
+      setShowCallOutcome(true);
     }
   };
   
@@ -152,6 +151,7 @@ export function ContactDetail({ contactId }: ContactDetailProps) {
         onClose={() => setShowCallOutcome(false)}
         contactId={contact.id}
         contactName={contact.name}
+        contactPhone={contact.phone || ''}
         onSave={() => setShowCallOutcome(false)}
       />
     </div>

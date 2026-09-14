@@ -196,6 +196,9 @@ importers:
       '@tanstack/react-query-persist-client':
         specifier: ^5.102.8
         version: 5.102.8(@tanstack/react-query@5.102.8(react@19.2.8))(react@19.2.8)
+      call-monitor:
+        specifier: workspace:*
+        version: link:plugins/call-monitor
       idb:
         specifier: ^8.0.3
         version: 8.0.3
@@ -260,6 +263,15 @@ importers:
       vitest:
         specifier: ^2.1.9
         version: 2.1.9(@types/node@20.19.43)(@vitest/ui@2.1.9)(jsdom@30.0.1)(lightningcss@1.33.0)(supports-color@7.2.0)
+
+  plugins/call-monitor:
+    devDependencies:
+      '@capacitor/cli':
+        specifier: ^8.0.0
+        version: 8.5.2(supports-color@7.2.0)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
 packages:
 

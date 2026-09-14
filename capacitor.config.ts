@@ -22,6 +22,7 @@ const config: CapacitorConfig = {
       sound: 'beep.wav',
     },
     SecureStorage: {},
+    CallMonitor: {},
   },
 };
 

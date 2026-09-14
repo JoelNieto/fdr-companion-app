@@ -1,0 +1,29 @@
+{
+  "identifier": "CallMonitorPlugin",
+  "name": "CallMonitor",
+  "platforms": ["ios"],
+  "methods": {
+    "startCall": {
+      "parameters": [
+        {
+          "name": "phoneNumber",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "addListener": {
+      "parameters": [
+        {
+          "name": "eventName",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    "removeAllListeners": {}
+  },
+  "events": [
+    "callState"
+  ]
+}

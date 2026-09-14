@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Capacitor } from '@capacitor/core';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { useWorkOrder } from '@/features/work-orders/hooks/use-work-orders.hook';
 import { useAdvanceStatus, useBlockWorkOrder, useResumeWorkOrder, useAddPhoto } from '@/features/work-orders/hooks/use-work-orders.hook';
 import { Button } from '@/components/ui/Button';
@@ -72,23 +74,46 @@ export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
     resumeWorkOrder.mutate({ workOrderId: wo.id });
   };
   
-  const handleAddPhoto = () => {
-    // For web, we'll simulate photo capture with a file input
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        // Create a blob URL for the photo
-        const url = URL.createObjectURL(file);
-        addPhoto.mutate({ workOrderId: wo.id, uri: url });
+  const handleAddPhoto = async () => {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        // Use Capacitor Camera plugin on native platforms
+        const photo = await Camera.getPhoto({
+          quality: 90,
+          allowEditing: false,
+          resultType: CameraResultType.DataUrl,
+          source: CameraSource.Camera,
+        });
+        
+        if (photo.dataUrl) {
+          addPhoto.mutate({ workOrderId: wo.id, uri: photo.dataUrl });
+        }
+      } else {
+        // Web fallback: use file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.capture = 'environment';
+        input.onchange = async (e) => {
+          const file = (e.target as HTMLInputElement).files?.[0];
+          if (file) {
+            // Create a blob URL for the photo
+            const url = URL.createObjectURL(file);
+            addPhoto.mutate({ workOrderId: wo.id, uri: url });
+          }
+        };
+        input.click();
       }
-    };
-    input.click();
+    } catch (err: unknown) {
+      // Handle permission denied
+      if (err instanceof Error && err.message.includes('permission')) {
+        setShowCameraExplainer(true);
+      } else {
+        console.error('Photo capture failed:', err);
+      }
+    }
   };
-  
+
   return (
     <div data-testid="wo-detail" className="p-4 space-y-6 pb-20 md:pb-4">
       <div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { Capacitor } from '@capacitor/core';
 import { Sheet } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
 
@@ -9,6 +10,8 @@ interface CameraPermissionExplainerProps {
 }
 
 export function CameraPermissionExplainer({ onClose, dataTestId }: CameraPermissionExplainerProps) {
+  const isNative = Capacitor.isNativePlatform();
+  
   return (
     <Sheet
       isOpen={true}
@@ -25,15 +28,28 @@ export function CameraPermissionExplainer({ onClose, dataTestId }: CameraPermiss
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Camera Access Needed</h3>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
             To capture photo evidence, this app needs access to your camera. 
-            On web, this requires granting camera permission in your browser settings.
+            {isNative 
+              ? 'On iOS/Android, grant permission in Settings when prompted.'
+              : 'On web, this requires granting camera permission in your browser settings.'
+            }
           </p>
         </div>
         <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-left text-sm">
           <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">How to enable:</p>
           <ol className="space-y-1 text-gray-600 dark:text-gray-400 list-decimal list-inside">
-            <li>Click the camera icon in your browser&apos;s address bar</li>
-            <li>Select &quot;Allow&quot; for camera access</li>
-            <li>Refresh this page</li>
+            {isNative ? (
+              <>
+                <li>When prompted, tap "Allow" for camera access</li>
+                <li>{'If denied, go to Settings > Field Companion > Camera and enable'}</li>
+                <li>Return to the app and try again</li>
+              </>
+            ) : (
+              <>
+                <li>Click the camera icon in your browser&apos;s address bar</li>
+                <li>Select "Allow" for camera access</li>
+                <li>Refresh this page</li>
+              </>
+            )}
           </ol>
         </div>
         <Button onClick={onClose} className="w-full">

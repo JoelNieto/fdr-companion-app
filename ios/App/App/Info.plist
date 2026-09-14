@@ -26,6 +26,8 @@
   <true/>
   <key>NSUserActivityTypePhone</key>
   <true/>
+  <key>NSCameraUsageDescription</key>
+  <string>This app needs camera access to capture photo evidence for work orders.</string>
   <key>UIApplicationSceneManifest</key>
   <dict>
     <key>UIApplicationSupportsMultipleScenes</key>

@@ -99,4 +99,12 @@ Refactor [component/hook] to:
 - [ ] Offline: cached reads work, writes queue, replay on reconnect
 - [ ] Push: in-app banner on foreground, deep link works
 - [ ] Vitest suite green (outbox, status transitions, hooks, call fallback)
-- [ ] `pnpm lint && tsc --noEmit` pass
+- [ ] `pnpm lint && tsc --noEmit` pass## 2026-09-14T14:40:45.378Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Set up Capacitor 8 with iOS and Android platforms
+```
+

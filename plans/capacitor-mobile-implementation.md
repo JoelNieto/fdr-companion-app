@@ -125,10 +125,10 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [ ] `docs/decisions/04-shell-strategy.md` → Bundled Static Export
 
 ### 9. PROMPTS.md Auto-Capture Mechanism
-- [ ] Create `.claude/hooks/pre-prompt.sh` or similar hook
-- [ ] Capture: timestamp, tool+model, verbatim prompt
-- [ ] Commit mechanism with the work (not separate commit)
-- [ ] Document in README
+- [x] Create `.kilo/hooks/capture-prompt.js` (and `.sh` wrapper)
+- [x] Capture: timestamp, tool+model, verbatim prompt
+- [x] Commit mechanism with the work (not separate commit)
+- [x] Document in README
 
 ### 10. Testing (Vitest)
 - [ ] Test outbox logic (enqueue → replay → failure → retry)

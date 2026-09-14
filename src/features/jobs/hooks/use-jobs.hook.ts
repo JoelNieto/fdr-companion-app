@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getJobs, getJob, getJobsByContact, getJobsByStatus, createWorkOrder } from '@/features/jobs/server/actions';
 import type { Job, CreateWorkOrderInput } from '@/lib/types';
 import { useFeedback } from '@/lib/feedback';
+import { useOfflineMutation } from '@/features/offline/hooks/use-offline-mutations.hook';
 
 export function useJobs() {
   return useQuery({
@@ -60,12 +61,15 @@ export function useCreateWorkOrder(jobId: string) {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFeedback();
   
-  return useMutation({
-    mutationFn: async (input: CreateWorkOrderInput) => {
+  return useOfflineMutation<{ workOrder: { id: string; title: string; status: string } }, CreateWorkOrderInput>({
+    mutationFn: async (input) => {
       const result = await createWorkOrder(jobId, input);
-      if (!result.success) throw new Error(result.message);
+      if (!result.success || !result.data) throw new Error(result.message ?? 'Failed to create work order');
       return result.data;
     },
+    outboxType: 'status_change',
+    getDescription: (input) => `Create work order: ${input.title}`,
+    getPayload: (input) => ({ ...input, type: 'create', jobId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobs', jobId] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });

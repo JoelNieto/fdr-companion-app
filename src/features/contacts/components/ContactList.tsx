@@ -34,7 +34,7 @@ export function ContactList() {
   return (
     <div data-testid="contact-list">
       <div className="sticky top-0 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 px-4 py-3">
-        <label htmlFor="contact-search-input" className="sr-only">Search contacts</label>
+        <label htmlFor="contact-search-input" className="sr-only" suppressHydrationWarning>Search contacts</label>
         <input
           id="contact-search-input"
           data-testid="contact-search-input"

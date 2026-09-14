@@ -4,10 +4,6 @@ const config: CapacitorConfig = {
   appId: 'com.fieldcompanion.app',
   appName: 'Field Companion',
   webDir: 'out',
-  server: {
-    url: 'http://192.168.40.26:3000',
-    cleartext: true,
-  },
   ios: {
     scheme: 'fieldcompanion',
   },

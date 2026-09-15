@@ -13,7 +13,7 @@ export function OfflineIndicator() {
         if (isOnline) {
           if (process.env.NODE_ENV === 'development') {
             return (
-              <div className="fixed top-4 right-4 z-50">
+              <div className="fixed top-safe-offset right-4 z-50">
                 <button
                   type="button"
                   onClick={() => setSimulatedOffline(true)}
@@ -31,7 +31,7 @@ export function OfflineIndicator() {
         return (
           <div
             data-testid="offline-indicator"
-            className="fixed top-0 left-0 right-0 z-50 bg-yellow-600 text-white text-center py-2 px-4 text-sm font-medium shadow-lg animate-slide-down pointer-events-none"
+            className="fixed top-0 left-0 right-0 z-50 bg-yellow-600 text-white text-center px-4 pt-safe-area pb-2 text-sm font-medium shadow-lg animate-slide-down pointer-events-none"
             role="status"
             aria-live="polite"
           >

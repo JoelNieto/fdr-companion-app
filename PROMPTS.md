@@ -437,3 +437,12 @@ Findings:
 Register our prompts in the PROPMTS.MD file (follow the format) and commit thses changes
 ```
 
+## 2026-09-15T16:07:00.000Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+Two more fixes: pull the floating outbox notificator to the right and fix the safe area styles, both top and bottom get lost in the notch and bottom of the iOS device
+```
+

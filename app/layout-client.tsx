@@ -42,13 +42,13 @@ export function LayoutClient({ children }: { children: ReactNode }) {
         <Header />
         <OfflineIndicator />
         <main className="flex-1 min-h-0">
-          <SafeArea className="md:pt-16">
+          <SafeArea className="pb-nav-safe md:pb-0 md:pt-0">
             {children}
           </SafeArea>
         </main>
         <Navigation />
-        {/* One instance only — duplicate mounts raced IndexedDB and wedged writes */}
-        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 md:bottom-auto md:left-auto md:right-4 md:top-24">
+        {/* Mobile: above bottom nav on the right; desktop: top-right */}
+        <div className="fixed bottom-outbox-safe right-4 z-50 md:bottom-auto md:top-24">
           <OutboxIndicator />
         </div>
       </PushProvider>

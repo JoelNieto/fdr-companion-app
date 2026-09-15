@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SafeAreaBottom } from './SafeArea';
 
 const navItems = [
   { href: '/contacts', label: 'Contacts', icon: ContactsIcon },
@@ -38,36 +37,34 @@ export function Navigation() {
   const pathname = usePathname();
   
   return (
-    <SafeAreaBottom>
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 md:hidden"
-        role="navigation"
-        aria-label="Main navigation"
-      >
-        <div className="grid grid-cols-3">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`
-                  flex flex-col items-center justify-center py-3 px-2 gap-1
-                  transition-colors
-                  ${isActive 
-                    ? 'text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                  }
-                `}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                <item.icon className="w-6 h-6" aria-hidden="true" />
-                <span className="text-xs font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-    </SafeAreaBottom>
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 pb-safe-area md:hidden"
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      <div className="grid grid-cols-3">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`
+                flex flex-col items-center justify-center py-3 px-2 gap-1
+                transition-colors
+                ${isActive 
+                  ? 'text-blue-600 dark:text-blue-400' 
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                }
+              `}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <item.icon className="w-6 h-6" aria-hidden="true" />
+              <span className="text-xs font-medium">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

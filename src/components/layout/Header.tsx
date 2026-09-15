@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SafeAreaTop } from './SafeArea';
 
 export function Header() {
   const pathname = usePathname();
@@ -15,19 +14,17 @@ export function Header() {
   
   return (
     <>
-      {/* Mobile Header with Safe Area Top */}
-      <SafeAreaTop>
-        <header className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 md:hidden">
-          <div className="w-full max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <Link href="/" className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                Field Companion
-              </Link>
-              <div className="w-8" /> {/* spacer for alignment */}
-            </div>
+      {/* Mobile: safe-area padding on the sticky header so background fills the notch */}
+      <header className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 pt-safe-area md:hidden">
+        <div className="w-full max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-gray-100">
+              Field Companion
+            </Link>
+            <div className="w-8" />
           </div>
-        </header>
-      </SafeAreaTop>
+        </div>
+      </header>
       
       {/* Desktop Header */}
       <header className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 hidden md:flex">

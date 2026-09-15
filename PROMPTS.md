@@ -377,3 +377,12 @@ Implement bundled static export strategy: Next.js output:export, generateStaticP
 Fix WebView failed provisional navigation: remove server.url from capacitor.config.ts so bundled static export loads local files from app bundle instead of trying to reach dev server
 ```
 
+## 2026-09-15T03:10:13.681Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Add native iOS/Android safe area styles for header and footer: Header with SafeAreaTop on mobile, Navigation with SafeAreaBottom, outbox indicator positioned above bottom nav with bottom-24
+```
+

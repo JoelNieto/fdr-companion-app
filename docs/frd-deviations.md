@@ -15,7 +15,9 @@ This document tracks deviations from the original Functional Requirements Docume
 | DEV-007 | Android Native | Platform added but no native Camera/Call Monitor | Timeline constraints; iOS prioritized per assessment | Android uses web fallbacks |
 | DEV-008 | Background Sync | Not implemented | iOS doesn't support background sync for PWAs | Requires app foreground for outbox replay |
 | DEV-009 | Camera on Web | File input with `capture="environment"` | Native Camera plugin unavailable on web | No camera controls (zoom, flash) on web |
-| DEV-010 | Seed Data | In-memory store reset on build | Static export bakes seed data into HTML | No persistent server database |
+| DEV-010 | Seed Data | In-memory/localStorage store; `pnpm seed` documents reset | Static export has no server DB | Reviewers reset via `localStorage.removeItem('field-companion-data')` |
+| DEV-011 | Photo capture status gate | Add Photo is always visible; permission requested on tap | Needed a reachable path to request camera permission on device without advancing status | Photos can be added in any status (FRD previously limited to `on_site`/`done`) |
+| DEV-012 | Push cold-start | Cold-start deep link (PLUS) not fully hardened | Timebox | Warm/background tap path is implemented |
 
 ## Accepted Trade-offs
 

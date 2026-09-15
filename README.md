@@ -59,8 +59,15 @@ pnpm tsc --noEmit
 # Lint
 pnpm lint
 
-# Vitest
-pnpm vitest run
+# Vitest (also: pnpm test)
+pnpm test
+```
+
+### Reset demo seed
+```bash
+pnpm seed
+# Then in the running app DevTools console:
+# localStorage.removeItem('field-companion-data'); location.reload();
 ```
 
 ---
@@ -228,8 +235,8 @@ Then refresh or wait 5s for polling.
 
 ### Unit Tests
 ```bash
-pnpm vitest run
-# 60 tests passing: outbox, status transitions, hooks, call fallback, notifications
+pnpm test
+# Vitest: outbox, status transitions, hooks, call fallback, notifications
 ```
 
 ---
@@ -294,6 +301,56 @@ docs/
 
 ---
 
+## Run Commands
+
+| Script | Purpose |
+|--------|---------|
+| `pnpm dev` | Web dev server |
+| `pnpm build` | Static export to `out/` |
+| `pnpm test` | Vitest suite |
+| `pnpm seed` | Print seed-reset instructions |
+| `pnpm cap:sync` | Sync web assets + plugins to native |
+| `pnpm cap:ios` | Build & launch iOS Simulator |
+| `pnpm cap:android` | Build & launch Android Emulator |
+
+---
+
+## Demo Video
+
+[`companion-app-demo.mov`](./companion-app-demo.mov) — ≤5 min screen recording (emulator run-through, offline outbox, call outcome, push deep link).
+
+---
+
+## FRD Required Fixtures
+
+Reset seed first (`pnpm seed` / clear `field-companion-data`) so reviewers hit these states in under a minute.
+
+| Fixture | How to reach |
+|---------|----------------|
+| `contacts-seeded` | Open **Contacts** (`/contacts`) |
+| `contact-with-jobs` | Open **Alice Johnson** (`/contacts/contact-1`) — ≥2 jobs + seeded note |
+| `contact-without-phone` | Open **Olivia Clark** (`/contacts/contact-15`) |
+| `call-just-ended` | On a contact with phone, tap **Call**, end/simulate call → outcome sheet |
+| `jobs-mixed-statuses` | Open **Jobs** (`/jobs`) — lead / scheduled / in_progress; none completed |
+| `job-with-work-orders` | Open **Roof Replacement - Main St** (`/jobs/job-1`) — ≥2 WOs |
+| `wo-create-sheet-open` | On job detail, tap create work order |
+| `my-wo-today-and-upcoming` | Open **Work Orders** (`/work-orders`) as Casey — ≥2 today, ≥2 upcoming |
+| `wo-scheduled` | Open `/work-orders/detail/?id=wo-1` |
+| `wo-en-route` | Open `/work-orders/detail/?id=wo-3` |
+| `wo-on-site` | Open `/work-orders/detail/?id=wo-5` (job contact has phone) |
+| `wo-blocked-from-on-site` | Open `/work-orders/detail/?id=wo-9` |
+| `camera-permission-denied` | On device, deny camera, then tap **Add Photo** on any WO |
+| `device-offline` | Browse online, then Airplane Mode / DevTools Offline / Network plugin |
+| `outbox-two-pending` | While offline, advance two different WOs |
+| `push-ready` | Grant notification permission on launch |
+| `push-permission-denied` | Deny notifications → permission hint shows |
+| `app-backgrounded` | Background app, create WO assigned to Casey |
+| `unknown-wo-deep-link` | Open `/work-orders/detail/?id=wo-does-not-exist` |
+
+Seed sizes: **16 contacts**, **11 jobs**, **12 work orders**. Signed-in crew member: **Casey Rivera**.
+
+---
+
 ## Documentation
 
 - [LIBRARIES.md](LIBRARIES.md) - Core libraries & architecture decisions
@@ -318,14 +375,13 @@ All FRD test IDs implemented (see FRD for complete list):
 
 ## Known Limitations
 
-- No Service Worker (offline caching limited to IndexedDB)
-- Push simulated via localStorage polling on web
-- Native plugins (Camera, Call Monitor) not available on web
-- Call Monitor: iOS only (Android uses web fallback)
+See [LIMITATIONS.md](LIMITATIONS.md) and [docs/frd-deviations.md](docs/frd-deviations.md). Highlights:
+
+- No Service Worker (offline mutations via IndexedDB outbox)
+- Push via Local Notifications (not FCM/APNs)
+- Call Monitor: iOS native; Android/web fallback
 - Single user (Casey Rivera), no auth
-- Android: platform added but no native Camera/Call Monitor implementation
-- Static export: no Server Actions, uses client-actions.ts + dataStore
-- No background sync (iOS restriction)
+- Static export: `client-actions.ts` + `dataStore` (no Server Actions)
 
 ---
 

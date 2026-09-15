@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getWorkOrder } from '@/lib/client-actions';
+import { useWorkOrder } from '@/features/work-orders/hooks/use-work-orders.hook';
 import { WorkOrderDetail } from '@/features/work-orders/components/WorkOrderDetail';
+import { useEffect, useState } from 'react';
 
 export function WorkOrderDetailClient() {
   const [workOrderId, setWorkOrderId] = useState<string | null>(null);
@@ -15,16 +14,7 @@ export function WorkOrderDetailClient() {
     setHasReadParams(true);
   }, []);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['work-order', workOrderId],
-    queryFn: async () => {
-      const result = await getWorkOrder(workOrderId!);
-      if (!result.success) throw new Error(result.message);
-      if (!result.data) throw new Error('Work order not found');
-      return result.data;
-    },
-    enabled: !!workOrderId,
-  });
+  const { data, isLoading, error } = useWorkOrder(workOrderId ?? '');
 
   if (!hasReadParams || (workOrderId && isLoading)) {
     return (

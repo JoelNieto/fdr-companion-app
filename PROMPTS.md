@@ -482,3 +482,12 @@ The offline added work orders are not being added to the work order list once sy
 Add prompts and commit
 ```
 
+## 2026-09-15T17:21:24.508Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+Demo video added, continue the checklist completion
+```
+

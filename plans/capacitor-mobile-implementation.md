@@ -148,11 +148,11 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [x] `TIMELOG.md` - update with mobile phase
 
 ### 11. Demo Video (≤ 5 min)
-- [ ] Record: emulator run-through
-- [ ] Record: offline outbox cycle (kill network → mutate → restore → replay)
-- [ ] Record: call-outcome flow
-- [ ] Record: push deep link
-- [ ] Upload as unlisted YouTube or include in repo
+- [x] Record: emulator run-through
+- [x] Record: offline outbox cycle (kill network → mutate → restore → replay)
+- [x] Record: call-outcome flow
+- [x] Record: push deep link
+- [x] Upload as unlisted YouTube or include in repo
 
 ### 12. CI/CD (PLUS)
 - [x] GitHub Actions: lint + typecheck + test

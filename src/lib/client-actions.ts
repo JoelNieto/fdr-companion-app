@@ -99,3 +99,9 @@ export async function resumeWorkOrder(input: ResumeWorkOrderInput): Promise<ApiE
 export async function addPhotoToWorkOrder(workOrderId: string, uri: string): Promise<ApiEnvelope<Photo>> {
   return dataStore.addPhoto(workOrderId, uri);
 }
+
+/** Reset persisted localStorage demo data to seed fixtures. */
+export async function resetDemoData(): Promise<ApiEnvelope<null>> {
+  dataStore.resetToSeed();
+  return createEnvelope(null, 'Demo data reset to seed');
+}

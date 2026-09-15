@@ -30,7 +30,9 @@ function saveToStorage(data: { contacts: Contact[]; jobs: Job[]; workOrders: Wor
 }
 
 const storedData = loadFromStorage();
-const initialContacts = storedData?.contacts ?? [...seedData.contacts];
+const initialContacts = (storedData?.contacts ?? [...seedData.contacts]).map(
+  (c: Contact) => ({ ...c, notes: c.notes ?? [] }),
+);
 const initialJobs = storedData?.jobs ?? [...seedData.jobs];
 const initialWorkOrders = storedData?.workOrders ?? [...seedData.workOrders];
 
@@ -125,9 +127,12 @@ export const dataStore = {
       text: validation.data.note,
       timestamp: new Date().toISOString(),
     };
-    
-    // In a real app, notes would be stored per contact
-    // For now we return the note
+
+    if (!contact.notes) {
+      contact.notes = [];
+    }
+    contact.notes.push(newNote);
+    persist();
     return createEnvelope(newNote, 'Call outcome saved');
   },
   

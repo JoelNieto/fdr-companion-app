@@ -1,12 +1,25 @@
 export type JobStatus = 'lead' | 'scheduled' | 'in_progress' | 'completed';
 export type WorkOrderStatus = 'scheduled' | 'en_route' | 'on_site' | 'done' | 'blocked';
 
+export interface Note {
+  id: string;
+  text: string;
+  timestamp: string;
+}
+
+export interface Photo {
+  id: string;
+  uri: string;
+  timestamp: string;
+}
+
 export interface Contact {
   id: string;
   name: string;
   phone: string;
   email: string;
   address: string;
+  notes: Note[];
 }
 
 export interface Job {
@@ -29,18 +42,6 @@ export interface WorkOrder {
   photos: Photo[];
   blockedFromStatus?: WorkOrderStatus;
   blockedReason?: string;
-}
-
-export interface Note {
-  id: string;
-  text: string;
-  timestamp: string;
-}
-
-export interface Photo {
-  id: string;
-  uri: string;
-  timestamp: string;
 }
 
 export interface CreateWorkOrderInput {

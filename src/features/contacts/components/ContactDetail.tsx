@@ -139,10 +139,24 @@ export function ContactDetail({ contactId }: ContactDetailProps) {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Notes</h2>
         </div>
         <ul id="contact-notes-list" data-testid="contact-notes-list" className="space-y-2">
-          {/* Notes would be displayed here - for now empty as notes are stored separately */}
-          <li className="text-center text-gray-500 dark:text-gray-400 py-4">
-            No notes yet. Call outcomes will appear here.
-          </li>
+          {(contact.notes?.length ?? 0) === 0 ? (
+            <li className="text-center text-gray-500 dark:text-gray-400 py-4">
+              No notes yet. Call outcomes will appear here.
+            </li>
+          ) : (
+            contact.notes.map((note) => (
+              <li
+                key={note.id}
+                className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                data-testid={`contact-note-${note.id}`}
+              >
+                <p className="text-gray-900 dark:text-gray-100">{note.text}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {new Date(note.timestamp).toLocaleString()}
+                </p>
+              </li>
+            ))
+          )}
         </ul>
       </section>
       

@@ -12,7 +12,6 @@ export function SafeArea({ children, className = '' }: SafeAreaProps) {
     <div
       className={`
         min-h-screen
-        pt-safe-area pb-safe-area
         ${className}
       `}
     >

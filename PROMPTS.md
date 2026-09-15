@@ -386,3 +386,12 @@ Fix WebView failed provisional navigation: remove server.url from capacitor.conf
 Add native iOS/Android safe area styles for header and footer: Header with SafeAreaTop on mobile, Navigation with SafeAreaBottom, outbox indicator positioned above bottom nav with bottom-24
 ```
 
+## 2026-09-15T03:31:14.812Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Fix safe area not working: add viewport-fit=cover to layout.tsx viewport config so env(safe-area-inset-*) CSS variables work on iOS
+```
+

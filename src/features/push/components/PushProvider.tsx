@@ -34,7 +34,7 @@ export function PushProvider({ children }: { children: React.ReactNode }) {
             const data = notification.notification.extra;
             if (data?.workOrderId) {
               // Navigate to work order detail
-              window.location.href = `/work-orders/${data.workOrderId}`;
+              window.location.href = `/work-orders/detail?id=${data.workOrderId}`;
             }
           }
         );

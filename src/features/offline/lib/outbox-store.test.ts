@@ -1,122 +1,201 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { addOutboxItem, getOutboxItems, getPendingOutboxItems, updateOutboxItem, deleteOutboxItem } from '@/features/offline/lib/outbox-store';
+import { 
+  addOutboxItem, 
+  getOutboxItems, 
+  getPendingOutboxItems, 
+  updateOutboxItem, 
+  deleteOutboxItem, 
+  clearSyncedItems 
+} from '@/features/offline/lib/outbox-store';
 
-// Mock IDB
-const mockStore = new Map<string, any>();
+// Mock idb using vi.hoisted - IDB uses add, put, getAllFromIndex, delete, etc.
+const { mockDB } = vi.hoisted(() => {
+  const mockStore = {
+    delete: vi.fn().mockResolvedValue(undefined),
+  };
+  const db = {
+    add: vi.fn().mockResolvedValue(undefined),
+    put: vi.fn().mockResolvedValue(undefined),
+    getAll: vi.fn().mockResolvedValue([]),
+    getAllFromIndex: vi.fn().mockResolvedValue([]),
+    delete: vi.fn().mockResolvedValue(undefined),
+    clear: vi.fn().mockResolvedValue(undefined),
+    transaction: vi.fn().mockReturnValue({
+      done: Promise.resolve(),
+      store: mockStore,
+    }),
+    close: vi.fn(),
+  };
+  return { mockDB: db };
+});
 
 vi.mock('idb', () => ({
-  openDB: vi.fn().mockResolvedValue({
-    add: vi.fn(async (storeName, item) => {
-      mockStore.set(item.id, { ...item });
-    }),
-    getAllFromIndex: vi.fn(async (storeName, indexName, query) => {
-      if (indexName === 'by-createdAt') {
-        return Array.from(mockStore.values())
-          .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-      }
-      if (indexName === 'by-state') {
-        return Array.from(mockStore.values())
-          .filter(item => item.state === query);
-      }
-      return Array.from(mockStore.values());
-    }),
-    put: vi.fn(async (storeName, item) => {
-      mockStore.set(item.id, { ...item });
-    }),
-    delete: vi.fn(async (storeName, id) => {
-      mockStore.delete(id);
-    }),
-    transaction: vi.fn(() => ({
-      store: {
-        delete: vi.fn(async (id) => mockStore.delete(id)),
-      },
-      done: Promise.resolve(),
-    })),
-  }),
+  openDB: vi.fn().mockResolvedValue(mockDB),
 }));
 
-describe('outbox-store', () => {
+describe('Outbox Store', () => {
   beforeEach(() => {
-    mockStore.clear();
+    vi.clearAllMocks();
   });
 
-  it('adds and retrieves outbox items', async () => {
-    const item = {
-      id: 'test-1',
-      type: 'status_change' as const,
-      payload: { workOrderId: 'wo-1', type: 'advance' },
-      description: 'Advance work order wo-1',
-      state: 'pending' as const,
-      createdAt: new Date().toISOString(),
-    };
-
-    await addOutboxItem(item);
-    const items = await getOutboxItems();
-    
-    expect(items).toHaveLength(1);
-    expect(items[0].id).toBe('test-1');
+  afterEach(() => {
+    vi.resetAllMocks();
   });
 
-  it('filters pending items', async () => {
-    const pendingItem = {
-      id: 'pending-1',
-      type: 'call_outcome' as const,
-      payload: { contactId: 'c-1', note: 'test' },
-      description: 'Call outcome for c-1',
-      state: 'pending' as const,
-      createdAt: new Date().toISOString(),
-    };
-    
-    const syncedItem = {
-      id: 'synced-1',
-      type: 'status_change' as const,
-      payload: { workOrderId: 'wo-1', type: 'advance' },
-      description: 'Advance wo-1',
-      state: 'synced' as const,
-      createdAt: new Date().toISOString(),
-      retriedAt: new Date().toISOString(),
-    };
+  describe('addOutboxItem', () => {
+    it('adds item to outbox', async () => {
+      const item = {
+        id: 'test-1',
+        type: 'status_change',
+        payload: { workOrderId: 'wo-1', type: 'advance' },
+        description: 'Advance work order wo-1',
+        state: 'pending' as const,
+        createdAt: new Date().toISOString(),
+      };
 
-    await addOutboxItem(pendingItem);
-    await addOutboxItem(syncedItem);
+      await addOutboxItem(item);
+      
+      expect(mockDB.add).toHaveBeenCalledWith('outbox', expect.objectContaining({
+        id: 'test-1',
+        type: 'status_change',
+        state: 'pending',
+      }));
+    });
 
-    const pending = await getPendingOutboxItems();
-    expect(pending).toHaveLength(1);
-    expect(pending[0].id).toBe('pending-1');
+    it('uses provided createdAt when given', async () => {
+      const providedCreatedAt = '2024-01-01T12:00:00Z';
+      const item = {
+        id: 'test-2',
+        type: 'call_outcome',
+        payload: { contactId: 'c-1', note: 'Test' },
+        description: 'Log call outcome for contact c-1',
+        state: 'pending' as const,
+        createdAt: providedCreatedAt,
+      };
+
+      await addOutboxItem(item);
+      
+      expect(mockDB.add).toHaveBeenCalledWith('outbox', expect.objectContaining({
+        createdAt: providedCreatedAt,
+      }));
+    });
   });
 
-  it('updates item state', async () => {
-    const item = {
-      id: 'update-1',
-      type: 'status_change' as const,
-      payload: { workOrderId: 'wo-1', type: 'block' },
-      description: 'Block wo-1',
-      state: 'pending' as const,
-      createdAt: new Date().toISOString(),
-    };
+  describe('getOutboxItems', () => {
+    it('returns all outbox items from by-createdAt index', async () => {
+      const mockItems = [
+        { id: '1', type: 'status_change', state: 'pending', createdAt: '2024-01-01T00:00:00Z' },
+        { id: '2', type: 'call_outcome', state: 'synced', createdAt: '2024-01-02T00:00:00Z' },
+      ];
+      mockDB.getAllFromIndex.mockResolvedValue(mockItems);
 
-    await addOutboxItem(item);
-    await updateOutboxItem({ ...item, state: 'synced', retriedAt: new Date().toISOString() });
-    
-    const items = await getOutboxItems();
-    expect(items[0].state).toBe('synced');
-    expect(items[0].retriedAt).toBeDefined();
+      const items = await getOutboxItems();
+      
+      expect(items).toEqual(mockItems);
+      expect(mockDB.getAllFromIndex).toHaveBeenCalledWith('outbox', 'by-createdAt');
+    });
   });
 
-  it('deletes items', async () => {
-    const item = {
-      id: 'delete-1',
-      type: 'call_outcome' as const,
-      payload: { contactId: 'c-1', note: 'test' },
-      description: 'Call outcome',
-      state: 'pending' as const,
-      createdAt: new Date().toISOString(),
-    };
+  describe('getPendingOutboxItems', () => {
+    it('returns only pending items from by-state index', async () => {
+      const mockItems = [
+        { id: '1', type: 'status_change', state: 'pending', createdAt: '2024-01-01T00:00:00Z' },
+        { id: '3', type: 'create', state: 'pending', createdAt: '2024-01-03T00:00:00Z' },
+      ];
+      mockDB.getAllFromIndex.mockResolvedValue(mockItems);
 
-    await addOutboxItem(item);
-    await deleteOutboxItem('delete-1');
-    
-    const items = await getOutboxItems();
-    expect(items).toHaveLength(0);
+      const items = await getPendingOutboxItems();
+      
+      expect(items).toHaveLength(2);
+      expect(items.map(i => i.id)).toEqual(['1', '3']);
+      expect(mockDB.getAllFromIndex).toHaveBeenCalledWith('outbox', 'by-state', 'pending');
+    });
+  });
+
+  describe('updateOutboxItem', () => {
+    it('updates item state', async () => {
+      const item = { 
+        id: 'test-1', 
+        type: 'status_change', 
+        payload: {}, 
+        description: 'Test',
+        state: 'synced', 
+        createdAt: '2024-01-01T00:00:00Z' 
+      };
+      
+      await updateOutboxItem(item);
+      
+      expect(mockDB.put).toHaveBeenCalledWith('outbox', expect.objectContaining({
+        id: 'test-1',
+        state: 'synced',
+      }));
+    });
+
+    it('updates item with error and retriedAt', async () => {
+      const item = { 
+        id: 'test-1', 
+        type: 'status_change', 
+        payload: {}, 
+        description: 'Test',
+        state: 'failed', 
+        createdAt: '2024-01-01T00:00:00Z',
+        error: 'Network error',
+        retriedAt: '2024-01-01T00:00:01Z',
+      };
+      
+      await updateOutboxItem(item);
+      
+      expect(mockDB.put).toHaveBeenCalledWith('outbox', expect.objectContaining({
+        id: 'test-1',
+        state: 'failed',
+        error: 'Network error',
+        retriedAt: '2024-01-01T00:00:01Z',
+      }));
+    });
+  });
+
+  describe('deleteOutboxItem', () => {
+    it('deletes item from outbox', async () => {
+      await deleteOutboxItem('test-1');
+      
+      expect(mockDB.delete).toHaveBeenCalledWith('outbox', 'test-1');
+    });
+  });
+
+  describe('clearSyncedItems', () => {
+    it('deletes all synced items via transaction', async () => {
+      const mockItems = [
+        { id: '1', state: 'synced' },
+        { id: '3', state: 'synced' },
+      ];
+      mockDB.getAllFromIndex.mockResolvedValue(mockItems);
+
+      // Mock the transaction and its store
+      const mockStore = {
+        delete: vi.fn().mockResolvedValue(undefined),
+      };
+      mockDB.transaction.mockReturnValue({
+        done: Promise.resolve(),
+        store: mockStore,
+      });
+
+      await clearSyncedItems();
+      
+      expect(mockDB.getAllFromIndex).toHaveBeenCalledWith('outbox', 'by-state', 'synced');
+      expect(mockDB.transaction).toHaveBeenCalledWith('outbox', 'readwrite');
+      
+      expect(mockStore.delete).toHaveBeenCalledTimes(2);
+      expect(mockStore.delete).toHaveBeenCalledWith('1');
+      expect(mockStore.delete).toHaveBeenCalledWith('3');
+    });
+
+    it('does nothing if no synced items', async () => {
+      mockDB.getAllFromIndex.mockResolvedValue([]);
+
+      await clearSyncedItems();
+      
+      expect(mockDB.getAllFromIndex).toHaveBeenCalledWith('outbox', 'by-state', 'synced');
+      expect(mockDB.transaction).not.toHaveBeenCalled();
+    });
   });
 });

@@ -69,7 +69,7 @@ export function MyWorkOrdersList() {
             {todayOrders.map(wo => (
               <Link
                 key={wo.id}
-                href={`/work-orders/${wo.id}`}
+                href={`/work-orders/detail?id=${wo.id}`}
                 className="block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div data-testid={`wo-item-${wo.id}`} className="flex items-center justify-between">
@@ -98,7 +98,7 @@ export function MyWorkOrdersList() {
             {upcomingOrders.map(wo => (
               <Link
                 key={wo.id}
-                href={`/work-orders/${wo.id}`}
+                href={`/work-orders/detail?id=${wo.id}`}
                 className="block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div data-testid={`wo-item-${wo.id}`} className="flex items-center justify-between">

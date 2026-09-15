@@ -24,7 +24,7 @@ export function LayoutClient({ children }: { children: ReactNode }) {
         // Handle fieldcompanion://work-orders/{id}
         if (url.startsWith('fieldcompanion://work-orders/')) {
           const workOrderId = url.replace('fieldcompanion://work-orders/', '');
-          router.push(`/work-orders/${workOrderId}`);
+          router.push(`/work-orders/detail?id=${workOrderId}`);
         }
       };
       

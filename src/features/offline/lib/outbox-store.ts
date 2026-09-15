@@ -61,6 +61,11 @@ export async function deleteOutboxItem(id: string): Promise<void> {
 export async function clearSyncedItems(): Promise<void> {
   const db = await getOutboxDB();
   const syncedItems = await db.getAllFromIndex('outbox', 'by-state', 'synced');
+  
+  if (syncedItems.length === 0) {
+    return;
+  }
+  
   const tx = db.transaction('outbox', 'readwrite');
   for (const item of syncedItems) {
     await tx.store.delete(item.id);

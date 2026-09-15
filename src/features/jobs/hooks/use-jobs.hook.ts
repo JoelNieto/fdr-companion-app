@@ -68,17 +68,23 @@ export function useCreateWorkOrder(jobId: string) {
       if (!result.success || !result.data) throw new Error(result.message ?? 'Failed to create work order');
       return result.data;
     },
-    outboxType: 'status_change',
+    outboxType: 'create',
     getDescription: (input) => `Create work order: ${input.title}`,
-    getPayload: (input) => ({ ...input, type: 'create', jobId }),
+    getPayload: (input) => ({ ...input, jobId }),
+    getOptimisticData: (input) => ({
+      workOrder: {
+        id: `temp-${Date.now()}`,
+        title: input.title,
+        status: 'scheduled',
+      },
+    }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['jobs', jobId] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });
       queryClient.invalidateQueries({ queryKey: ['work-orders', 'my'] });
       showSuccess('Work order created successfully');
-      
-      // Schedule local notification for assignment
+
       if (data?.workOrder) {
         scheduleAssignmentNotification({
           id: data.workOrder.id,

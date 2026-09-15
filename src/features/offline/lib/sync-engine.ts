@@ -14,10 +14,18 @@ export interface SyncOptions {
   onComplete?: (results: { success: number; failed: number }) => void;
 }
 
+async function replayCreate(payload: Record<string, unknown>) {
+  return createWorkOrder(payload.jobId as string, {
+    title: payload.title as string,
+    assignee: payload.assignee as string,
+    scheduledDate: payload.scheduledDate as string,
+  });
+}
+
 const mutationMap: Record<string, MutationFunction> = {
   status_change: async (payload) => {
     const { type, ...rest } = payload;
-    
+
     if (type === 'advance') {
       return advanceWorkOrderStatus({ workOrderId: rest.workOrderId as string });
     }
@@ -27,15 +35,13 @@ const mutationMap: Record<string, MutationFunction> = {
     if (type === 'resume') {
       return resumeWorkOrder({ workOrderId: rest.workOrderId as string });
     }
+    // Legacy items queued as status_change with type: 'create'
     if (type === 'create') {
-      return createWorkOrder(rest.jobId as string, { 
-        title: rest.title as string, 
-        assignee: rest.assignee as string, 
-        scheduledDate: rest.scheduledDate as string 
-      });
+      return replayCreate(rest);
     }
     return { success: false, message: 'Unknown mutation type' };
   },
+  create: async (payload) => replayCreate(payload),
   call_outcome: async (payload) => {
     return saveCallOutcome({ contactId: payload.contactId as string, note: payload.note as string });
   },

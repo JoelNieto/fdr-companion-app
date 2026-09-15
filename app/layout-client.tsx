@@ -47,12 +47,8 @@ export function LayoutClient({ children }: { children: ReactNode }) {
           </SafeArea>
         </main>
         <Navigation />
-        {/* Mobile: Floating outbox indicator above bottom nav (with safe area) */}
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 md:hidden z-50">
-          <OutboxIndicator />
-        </div>
-        {/* Desktop: Fixed top-right outbox indicator */}
-        <div className="fixed top-20 right-4 md:top-24 md:right-4 z-50 hidden md:block">
+        {/* One instance only — duplicate mounts raced IndexedDB and wedged writes */}
+        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 md:bottom-auto md:left-auto md:right-4 md:top-24">
           <OutboxIndicator />
         </div>
       </PushProvider>

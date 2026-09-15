@@ -10,9 +10,14 @@ function createQueryClient(): QueryClient {
         gcTime: 1000 * 60 * 60 * 24, // 24 hours
         retry: 1,
         refetchOnWindowFocus: false,
+        // Local dataStore — allow reads while the browser reports offline
+        networkMode: 'offlineFirst',
       },
       mutations: {
         retry: 0,
+        // Critical: default 'online' PAUSES mutationFn when window goes offline,
+        // so useOfflineMutation never runs and buttons stick on "Creating..."
+        networkMode: 'always',
       },
     },
   });

@@ -395,3 +395,45 @@ Add native iOS/Android safe area styles for header and footer: Header with SafeA
 Fix safe area not working: add viewport-fit=cover to layout.tsx viewport config so env(safe-area-inset-*) CSS variables work on iOS
 ```
 
+## 2026-09-15T14:30:00.000Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+The issue is twofold:
+
+Button stuck in "Creating..." - The useOfflineMutation returns an optimistic result but the type mismatch and TanStack Query's isPending may not resolve properly when offline.
+Outbox indicator not showing - The useOutbox hook doesn't listen for outbox changes, so pendingCount doesn't update when items are added.
+```
+
+## 2026-09-15T14:41:00.000Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+No changes in the behaviour
+```
+
+## 2026-09-15T15:38:00.000Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+Findings:
+- Using the dev controls, works as expected
+- Using the Devtools Network Offline, same old behaviour
+- Using the iOS device, Airplane mode and turning off Wi-Fi , same old behavioir
+```
+
+## 2026-09-15T16:04:00.000Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+Register our prompts in the PROPMTS.MD file (follow the format) and commit thses changes
+```
+

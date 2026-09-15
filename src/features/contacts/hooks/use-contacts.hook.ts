@@ -135,6 +135,13 @@ export function useCallOutcome() {
     outboxType: 'call_outcome',
     getDescription: (input) => `Log call outcome for contact ${input.contactId}`,
     getPayload: (input) => ({ ...input }),
+    getOptimisticData: (input) => ({
+      note: {
+        id: `temp-${Date.now()}`,
+        text: input.note,
+        timestamp: new Date().toISOString(),
+      },
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
       showSuccess('Call outcome saved');

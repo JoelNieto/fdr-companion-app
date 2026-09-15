@@ -6,7 +6,7 @@ import {
   advanceWorkOrderStatus, blockWorkOrder, resumeWorkOrder, 
   addPhotoToWorkOrder, getWorkOrdersByAssignee, getWorkOrdersByAssigneeAndStatus
 } from '@/lib/client-actions';
-import type { WorkOrder, AdvanceStatusInput, BlockWorkOrderInput, ResumeWorkOrderInput } from '@/lib/types';
+import type { WorkOrder, WorkOrderStatus, AdvanceStatusInput, BlockWorkOrderInput, ResumeWorkOrderInput } from '@/lib/types';
 import { useFeedback } from '@/lib/feedback';
 import { useOfflineMutation } from '@/features/offline/hooks/use-offline-mutations.hook';
 
@@ -58,6 +58,16 @@ export function useAdvanceStatus() {
     outboxType: 'status_change',
     getDescription: (input) => `Mark work order ${input.workOrderId} as advanced`,
     getPayload: (input) => ({ ...input, type: 'advance' }),
+    getOptimisticData: (input) => ({
+      id: input.workOrderId,
+      jobId: '',
+      title: 'Pending',
+      assignee: '',
+      scheduledDate: '',
+      status: 'en_route' as WorkOrderStatus,
+      notes: [],
+      photos: [],
+    }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });
       queryClient.invalidateQueries({ queryKey: ['work-orders', 'my'] });
@@ -82,6 +92,18 @@ export function useBlockWorkOrder() {
     outboxType: 'status_change',
     getDescription: (input) => `Block work order ${input.workOrderId}`,
     getPayload: (input) => ({ ...input, type: 'block' }),
+    getOptimisticData: (input) => ({
+      id: input.workOrderId,
+      jobId: '',
+      title: 'Pending',
+      assignee: '',
+      scheduledDate: '',
+      status: 'blocked' as WorkOrderStatus,
+      notes: [],
+      photos: [],
+      blockedFromStatus: 'scheduled' as WorkOrderStatus,
+      blockedReason: input.reason,
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });
       queryClient.invalidateQueries({ queryKey: ['work-orders', 'my'] });
@@ -106,6 +128,16 @@ export function useResumeWorkOrder() {
     outboxType: 'status_change',
     getDescription: (input) => `Resume work order ${input.workOrderId}`,
     getPayload: (input) => ({ ...input, type: 'resume' }),
+    getOptimisticData: (input) => ({
+      id: input.workOrderId,
+      jobId: '',
+      title: 'Pending',
+      assignee: '',
+      scheduledDate: '',
+      status: 'scheduled' as WorkOrderStatus,
+      notes: [],
+      photos: [],
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });
       queryClient.invalidateQueries({ queryKey: ['work-orders', 'my'] });

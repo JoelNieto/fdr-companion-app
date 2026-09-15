@@ -1,16 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useOnlineStatus } from '@/features/offline/hooks/use-online-status.hook';
 
-// Mock Capacitor
 vi.mock('@capacitor/core', () => ({
   Capacitor: {
     isNativePlatform: () => false,
   },
 }));
 
-// Mock Network plugin
-const mockNetworkListener = vi.fn();
 vi.mock('@capacitor/network', () => ({
   Network: {
     getStatus: vi.fn().mockResolvedValue({ connected: true }),
@@ -19,54 +15,63 @@ vi.mock('@capacitor/network', () => ({
 }));
 
 describe('useOnlineStatus', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    Object.defineProperty(navigator, 'onLine', { writable: true, value: true });
+  beforeEach(async () => {
+    vi.resetModules();
   });
 
   it('returns online status on web', async () => {
+    const { setSimulatedOffline } = await import('@/features/offline/lib/online-status');
+    setSimulatedOffline(null);
+
+    const { useOnlineStatus } = await import('@/features/offline/hooks/use-online-status.hook');
     const { result } = renderHook(() => useOnlineStatus());
-    
+
     await waitFor(() => {
       expect(result.current.isOnline).toBe(true);
     });
   });
 
-  it('detects offline event on web', async () => {
+  it('detects simulated offline', async () => {
+    const { setSimulatedOffline } = await import('@/features/offline/lib/online-status');
+    setSimulatedOffline(null);
+
+    const { useOnlineStatus } = await import('@/features/offline/hooks/use-online-status.hook');
     const { result } = renderHook(() => useOnlineStatus());
-    
+
     await waitFor(() => {
       expect(result.current.isOnline).toBe(true);
     });
 
-    // Simulate offline
     act(() => {
-      Object.defineProperty(navigator, 'onLine', { writable: true, value: false });
-      window.dispatchEvent(new Event('offline'));
+      setSimulatedOffline(true);
     });
 
     await waitFor(() => {
       expect(result.current.isOnline).toBe(false);
+      expect(result.current.simulatedOffline).toBe(true);
     });
   });
 
-  it('detects online event on web', async () => {
-    Object.defineProperty(navigator, 'onLine', { writable: true, value: false });
-    
+  it('increments reconnect generation when coming back online', async () => {
+    const { setSimulatedOffline } = await import('@/features/offline/lib/online-status');
+    setSimulatedOffline(true);
+
+    const { useOnlineStatus } = await import('@/features/offline/hooks/use-online-status.hook');
     const { result } = renderHook(() => useOnlineStatus());
-    
+
     await waitFor(() => {
       expect(result.current.isOnline).toBe(false);
     });
 
-    // Simulate online
+    const before = result.current.reconnectGeneration;
+
     act(() => {
-      Object.defineProperty(navigator, 'onLine', { writable: true, value: true });
-      window.dispatchEvent(new Event('online'));
+      setSimulatedOffline(null);
     });
 
     await waitFor(() => {
       expect(result.current.isOnline).toBe(true);
+      expect(result.current.reconnectGeneration).toBeGreaterThan(before);
     });
   });
 });

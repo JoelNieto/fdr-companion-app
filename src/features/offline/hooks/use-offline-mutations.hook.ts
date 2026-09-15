@@ -2,14 +2,16 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addOutboxItem } from "@/features/offline/lib/outbox-store";
-import { useOnlineStatus } from "./use-online-status.hook";
+import { getIsOnline, refreshOnlineStatus } from "@/features/offline/lib/online-status";
 import { useFeedback } from "@/lib/feedback";
 
 interface OfflineMutationOptions<TData, TVariables> {
   mutationFn: (variables: TVariables) => Promise<TData>;
-  outboxType: "status_change" | "call_outcome";
+  outboxType: "status_change" | "call_outcome" | "create";
   getDescription: (variables: TVariables) => string;
   getPayload: (variables: TVariables) => Record<string, unknown>;
+  /** Required so offline mutations resolve with a typed result and clear isPending. */
+  getOptimisticData: (variables: TVariables) => TData;
   onSuccess?: (data: TData, variables: TVariables) => void;
   onError?: (error: Error, variables: TVariables) => void;
 }
@@ -19,16 +21,17 @@ export function useOfflineMutation<TData, TVariables>({
   outboxType,
   getDescription,
   getPayload,
+  getOptimisticData,
   onSuccess,
   onError,
 }: OfflineMutationOptions<TData, TVariables>) {
-  const { isOnline } = useOnlineStatus();
   const { showSuccess, showError } = useFeedback();
 
   return useMutation({
     mutationFn: async (variables: TVariables) => {
-      if (!isOnline) {
-        // Queue for offline replay
+      const online = await refreshOnlineStatus();
+
+      if (!online) {
         const outboxItem = {
           id: `outbox-${Date.now()}-${Math.random().toString(36).slice(2)}`,
           type: outboxType,
@@ -38,25 +41,24 @@ export function useOfflineMutation<TData, TVariables>({
           createdAt: new Date().toISOString(),
         };
 
-        await addOutboxItem(outboxItem);
-        showSuccess("Action queued for when online");
+        try {
+          await addOutboxItem(outboxItem);
+          showSuccess("Action queued for when online");
+        } catch (err) {
+          console.error("Failed to queue outbox item", err);
+          showError("Could not save offline action — please retry");
+          throw err;
+        }
 
-        // Return optimistic result
-        return { success: true, offline: true } as TData;
+        return getOptimisticData(variables);
       }
 
       return mutationFn(variables);
     },
-    onSuccess: (data, variables) => {
-      if (
-        data &&
-        typeof data === "object" &&
-        "offline" in data &&
-        data.offline
-      ) {
-        // Already showed success for offline
-        return;
-      }
+    // Sync — async onMutate + connectivity emit re-renders raced isPending in testing
+    onMutate: () => ({ queuedOffline: !getIsOnline() }),
+    onSuccess: (data, variables, context) => {
+      if (context?.queuedOffline) return;
       onSuccess?.(data, variables);
     },
     onError: (error, variables) => {

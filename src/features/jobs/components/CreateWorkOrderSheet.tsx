@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sheet } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -20,20 +20,26 @@ export function CreateWorkOrderSheet({ isOpen, onClose, onCreate, isPending }: C
   const [assignee, setAssignee] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { showError, showSuccess } = useFeedback();
+  const { showError } = useFeedback();
   
   const crewMembers = seedData.crewMembers;
   
   const isValid = title.length >= 3 && assignee && scheduledDate;
   
+  useEffect(() => {
+    if (!isOpen || scheduledDate) return;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    setScheduledDate(tomorrow.toISOString().split('T')[0]);
+  }, [isOpen, scheduledDate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid) return;
+    if (!isValid || isPending) return;
     
     setErrors({});
     try {
       await onCreate({ title, assignee, scheduledDate });
-      showSuccess('Work order created successfully');
       setTitle('');
       setAssignee('');
       setScheduledDate('');
@@ -44,13 +50,6 @@ export function CreateWorkOrderSheet({ isOpen, onClose, onCreate, isPending }: C
       }
     }
   };
-  
-  // Set default date to tomorrow
-  if (!scheduledDate) {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    setScheduledDate(tomorrow.toISOString().split('T')[0]);
-  }
   
   return (
     <Sheet

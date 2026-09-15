@@ -359,3 +359,21 @@ Run the hook after every prompt
 Fix CallMonitorPlugin iOS build: add public override to addListener and removeAllListeners methods
 ```
 
+## 2026-09-14T22:42:55.504Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Implement bundled static export strategy: Next.js output:export, generateStaticParams for all dynamic routes, replace Server Actions with client-actions.ts using dataStore + outbox, update all hooks and sync-engine, deploy to iOS simulator
+```
+
+## 2026-09-14T22:49:29.774Z
+
+**Tool/Model:** kilo:nemotron-3-ultra
+
+**Prompt:**
+```
+Fix WebView failed provisional navigation: remove server.url from capacitor.config.ts so bundled static export loads local files from app bundle instead of trying to reach dev server
+```
+

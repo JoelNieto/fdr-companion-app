@@ -41,14 +41,14 @@ export function LayoutClient({ children }: { children: ReactNode }) {
       <PushProvider>
         <Header />
         <OfflineIndicator />
-        <main className="flex-1">
+        <main className="flex-1 min-h-0">
           <SafeArea className="md:pt-16">
             {children}
           </SafeArea>
         </main>
         <Navigation />
-        {/* Mobile: Floating outbox indicator above bottom nav */}
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 md:hidden z-50">
+        {/* Mobile: Floating outbox indicator above bottom nav (with safe area) */}
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 md:hidden z-50">
           <OutboxIndicator />
         </div>
         {/* Desktop: Fixed top-right outbox indicator */}

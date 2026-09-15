@@ -138,14 +138,14 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [x] Add tests for Local Notifications scheduling
 
 ### 10. Documentation
-- [ ] Update `README.md`:
+- [x] Update `README.md`:
   - Prerequisites table (Node, pnpm, Xcode, Android Studio versions)
   - Setup steps (clone → install → cap sync → run)
   - All run commands (`dev`, `cap:sync`, `cap:ios`, `cap:android`, `test`, `seed`)
   - Seed data + FRD fixture access instructions
-- [ ] `docs/frd-deviations.md` - any cuts/deviations
-- [ ] `LIMITATIONS.md` - what's cut, what's broken, next 8-hour plan
-- [ ] `TIMELOG.md` - update with mobile phase
+- [x] `docs/frd-deviations.md` - any cuts/deviations
+- [x] `LIMITATIONS.md` - what's cut, what's broken, next 8-hour plan
+- [x] `TIMELOG.md` - update with mobile phase
 
 ### 11. Demo Video (≤ 5 min)
 - [ ] Record: emulator run-through
@@ -155,8 +155,9 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [ ] Upload as unlisted YouTube or include in repo
 
 ### 12. CI/CD (PLUS)
-- [ ] GitHub Actions: lint + typecheck + test
-- [ ] iOS build on macOS runner (optional)
+- [x] GitHub Actions: lint + typecheck + test
+- [x] iOS build on macOS runner (optional)
+- [x] Android build on ubuntu runner
 
 ---
 
@@ -173,7 +174,7 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 | Deep link handling | `fieldcompanion://work-orders/{id}` works |
 | Static export builds | `pnpm build` produces `out/` |
 | Capacitor scripts work | `pnpm cap:sync`, `pnpm cap:ios` |
-| Vitest suite passes | `pnpm test` |
+| Vitest suite passes | `pnpm vitest run` (60 tests) |
 | ADRs in `docs/decisions/` | 4 files present |
 | PROMPTS.md auto-capture | Hook script committed |
 | README complete | All sections filled |
@@ -211,3 +212,5 @@ Remaining ~5.5 hours for mobile layer:
 - iOS build/test: ~45 min
 - ADRs + docs + README: ~45 min
 - Demo video: ~15 min
+
+**Actual Time Spent: ~15.5 hours (includes web phase overlap)**

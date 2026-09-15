@@ -6,6 +6,8 @@ import { Capacitor } from '@capacitor/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { useWorkOrder } from '@/features/work-orders/hooks/use-work-orders.hook';
 import { useAdvanceStatus, useBlockWorkOrder, useResumeWorkOrder, useAddPhoto } from '@/features/work-orders/hooks/use-work-orders.hook';
+import { useJob } from '@/features/jobs/hooks/use-jobs.hook';
+import { ContactCard } from '@/features/jobs/components/ContactCard';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { BlockSheet } from './BlockSheet';
@@ -17,7 +19,8 @@ interface WorkOrderDetailProps {
 }
 
 export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
-  const { data: wo, isLoading, error } = useWorkOrder(workOrderId);
+  const { data: wo, isLoading } = useWorkOrder(workOrderId);
+  const { data: job } = useJob(wo?.jobId ?? '');
   const advanceStatus = useAdvanceStatus();
   const blockWorkOrder = useBlockWorkOrder();
   const resumeWorkOrder = useResumeWorkOrder();
@@ -44,7 +47,6 @@ export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
   const canAdvance = wo && ['scheduled', 'en_route', 'on_site'].includes(wo.status);
   const canBlock = wo && ['en_route', 'on_site'].includes(wo.status);
   const canResume = wo && wo.status === 'blocked';
-  const canAddPhoto = wo && ['on_site', 'done'].includes(wo.status);
   
   if (isLoading) {
     return (
@@ -77,14 +79,22 @@ export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
   const handleAddPhoto = async () => {
     try {
       if (Capacitor.isNativePlatform()) {
-        // Use Capacitor Camera plugin on native platforms
+        const permissions = await Camera.checkPermissions();
+        if (permissions.camera !== 'granted') {
+          const requested = await Camera.requestPermissions({ permissions: ['camera'] });
+          if (requested.camera !== 'granted') {
+            setShowCameraExplainer(true);
+            return;
+          }
+        }
+
         const photo = await Camera.getPhoto({
           quality: 90,
           allowEditing: false,
           resultType: CameraResultType.DataUrl,
           source: CameraSource.Camera,
         });
-        
+
         if (photo.dataUrl) {
           addPhoto.mutate({ workOrderId: wo.id, uri: photo.dataUrl });
         }
@@ -97,7 +107,6 @@ export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
         input.onchange = async (e) => {
           const file = (e.target as HTMLInputElement).files?.[0];
           if (file) {
-            // Create a blob URL for the photo
             const url = URL.createObjectURL(file);
             addPhoto.mutate({ workOrderId: wo.id, uri: url });
           }
@@ -105,8 +114,8 @@ export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
         input.click();
       }
     } catch (err: unknown) {
-      // Handle permission denied
-      if (err instanceof Error && err.message.includes('permission')) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (/permission|denied|access|NSCameraUsageDescription|Info\.plist/i.test(message)) {
         setShowCameraExplainer(true);
       } else {
         console.error('Photo capture failed:', err);
@@ -156,11 +165,10 @@ export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
         
         <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Contact</h2>
-          {wo.jobId && (
-            <div className="space-y-2">
-              <p className="font-medium text-gray-900 dark:text-gray-100">Contact for this job</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Tap to call</p>
-            </div>
+          {job?.contactId ? (
+            <ContactCard contactId={job.contactId} />
+          ) : (
+            <p className="text-sm text-gray-500 dark:text-gray-400">No contact linked</p>
           )}
         </div>
       </div>
@@ -214,20 +222,18 @@ export function WorkOrderDetail({ workOrderId }: WorkOrderDetailProps) {
           </Button>
         )}
         
-        {canAddPhoto && (
-          <Button
-            onClick={handleAddPhoto}
-            data-testid="wo-add-photo-button"
-            className="w-full md:w-auto"
-            variant="secondary"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Add Photo
-          </Button>
-        )}
+        <Button
+          onClick={handleAddPhoto}
+          data-testid="wo-add-photo-button"
+          className="w-full md:w-auto"
+          variant="secondary"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Add Photo
+        </Button>
       </div>
       
       {/* Blocked reason display */}

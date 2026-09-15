@@ -12,6 +12,7 @@ import { ReactNode } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { useRouter } from 'next/navigation';
+import { workOrderDetailHref } from '@/features/work-orders/lib/work-order-routes';
 
 export function LayoutClient({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -23,8 +24,10 @@ export function LayoutClient({ children }: { children: ReactNode }) {
         const url = event.url;
         // Handle fieldcompanion://work-orders/{id}
         if (url.startsWith('fieldcompanion://work-orders/')) {
-          const workOrderId = url.replace('fieldcompanion://work-orders/', '');
-          router.push(`/work-orders/detail?id=${workOrderId}`);
+          const workOrderId = url.replace('fieldcompanion://work-orders/', '').split(/[?#]/)[0];
+          if (workOrderId) {
+            router.push(workOrderDetailHref(workOrderId));
+          }
         }
       };
       

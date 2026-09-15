@@ -66,5 +66,22 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Field Companion needs camera access to capture photo evidence on work orders.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Field Companion needs photo library access to attach existing photos to work orders.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Field Companion may save work order photos to your library.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.fieldcompanion.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fieldcompanion</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

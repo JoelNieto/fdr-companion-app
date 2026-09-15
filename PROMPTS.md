@@ -446,3 +446,39 @@ Register our prompts in the PROPMTS.MD file (follow the format) and commit thses
 Two more fixes: pull the floating outbox notificator to the right and fix the safe area styles, both top and bottom get lost in the notch and bottom of the iOS device
 ```
 
+## 2026-09-15T17:10:05.124Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+Two more fixes: The created work order native notification link seems to be broken, and make us to the contact page. And the Add photo button doesn't work on the device
+```
+
+## 2026-09-15T17:10:05.276Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+Now there is no way to as for the camera permission in the app so the Add photo button is just missing. Make the button always visible and ask for permission if needed at clicking it
+```
+
+## 2026-09-15T17:10:05.411Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+The offline added work orders are not being added to the work order list once synced. It seems like we are not invalidating the Work Order list query after the sync
+```
+
+## 2026-09-15T17:10:05.690Z
+
+**Tool/Model:** cursor:composer
+
+**Prompt:**
+```
+Add prompts and commit
+```
+

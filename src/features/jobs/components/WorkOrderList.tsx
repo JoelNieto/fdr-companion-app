@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
+import { workOrderDetailHref } from '@/features/work-orders/lib/work-order-routes';
 
 interface WorkOrderListProps {
   workOrders: Array<{
@@ -34,7 +35,7 @@ export function WorkOrderList({ workOrders, 'data-testid': testId }: WorkOrderLi
       {workOrders.map(wo => (
         <li key={wo.id}>
           <Link
-            href={`/work-orders/detail?id=${wo.id}`}
+            href={workOrderDetailHref(wo.id)}
             className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
           >
             <div data-testid={`job-wo-item-${wo.id}`} className="flex items-center justify-between">

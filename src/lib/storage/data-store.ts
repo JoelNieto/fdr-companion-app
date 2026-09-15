@@ -218,9 +218,6 @@ export const dataStore = {
     }
     
     const wo = workOrders[woIndex];
-    if (wo.status !== 'on_site' && wo.status !== 'done') {
-      return createErrorEnvelope<Photo>('Photos only allowed in on_site or done');
-    }
     
     const newPhoto: Photo = {
       id: `photo-${Date.now()}`,

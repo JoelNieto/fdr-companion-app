@@ -7,13 +7,12 @@ import { WorkOrderDetail } from '@/features/work-orders/components/WorkOrderDeta
 
 export function WorkOrderDetailClient() {
   const [workOrderId, setWorkOrderId] = useState<string | null>(null);
+  const [hasReadParams, setHasReadParams] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    if (id) {
-      setWorkOrderId(id);
-    }
+    setWorkOrderId(params.get('id'));
+    setHasReadParams(true);
   }, []);
 
   const { data, isLoading, error } = useQuery({
@@ -27,7 +26,7 @@ export function WorkOrderDetailClient() {
     enabled: !!workOrderId,
   });
 
-  if (isLoading) {
+  if (!hasReadParams || (workOrderId && isLoading)) {
     return (
       <div className="max-w-4xl mx-auto p-4">
         <div className="animate-pulse space-y-4">
@@ -39,7 +38,7 @@ export function WorkOrderDetailClient() {
     );
   }
 
-  if (error || !data) {
+  if (!workOrderId || error || !data) {
     return (
       <div className="max-w-4xl mx-auto p-4 text-center text-red-600 dark:text-red-400">
         Work order not found
@@ -47,5 +46,5 @@ export function WorkOrderDetailClient() {
     );
   }
 
-  return <WorkOrderDetail workOrderId={workOrderId!} />;
+  return <WorkOrderDetail workOrderId={workOrderId} />;
 }

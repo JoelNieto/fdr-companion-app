@@ -1,13 +1,28 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { getOutboxItems, getPendingOutboxItems, updateOutboxItem, deleteOutboxItem } from '@/features/offline/lib/outbox-store';
 import { replayOutbox } from '@/features/offline/lib/sync-engine';
 import { useOnlineStatus } from './use-online-status.hook';
 import { notifyOutboxChange, OUTBOX_CHANGED_EVENT } from '@/features/offline/lib/outbox-events';
 import type { OutboxDBSchema } from '@/features/offline/lib/outbox-store';
 
+function invalidateQueriesForOutboxType(
+  queryClient: ReturnType<typeof useQueryClient>,
+  type: OutboxDBSchema['outbox']['value']['type'],
+) {
+  if (type === 'create' || type === 'status_change') {
+    queryClient.invalidateQueries({ queryKey: ['work-orders'] });
+    queryClient.invalidateQueries({ queryKey: ['jobs'] });
+  }
+  if (type === 'call_outcome') {
+    queryClient.invalidateQueries({ queryKey: ['contacts'] });
+  }
+}
+
 export function useOutbox() {
+  const queryClient = useQueryClient();
   const [items, setItems] = useState<OutboxDBSchema['outbox']['value'][]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -23,11 +38,14 @@ export function useOutbox() {
 
   const handleReplay = useCallback(async () => {
     setIsSyncing(true);
+    const syncedTypes = new Set<OutboxDBSchema['outbox']['value']['type']>();
+
     await replayOutbox({
       onItemStart: (item) => {
         setItems(prev => prev.map(i => i.id === item.id ? { ...i, state: 'syncing' } : i));
       },
       onItemSuccess: (item) => {
+        syncedTypes.add(item.type);
         setItems(prev => prev.map(i => i.id === item.id ? { ...i, state: 'synced', retriedAt: new Date().toISOString() } : i));
       },
       onItemError: (item, error) => {
@@ -35,10 +53,13 @@ export function useOutbox() {
       },
       onComplete: () => {
         setIsSyncing(false);
+        for (const type of syncedTypes) {
+          invalidateQueriesForOutboxType(queryClient, type);
+        }
         loadItems();
       },
     });
-  }, [loadItems]);
+  }, [loadItems, queryClient]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

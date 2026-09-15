@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMyWorkOrders } from '@/features/work-orders/hooks/use-work-orders.hook';
 import { Badge } from '@/components/ui/Badge';
+import { workOrderDetailHref } from '@/features/work-orders/lib/work-order-routes';
 
 export function MyWorkOrdersList() {
   const { data: workOrders, isLoading, error } = useMyWorkOrders();
@@ -69,7 +70,7 @@ export function MyWorkOrdersList() {
             {todayOrders.map(wo => (
               <Link
                 key={wo.id}
-                href={`/work-orders/detail?id=${wo.id}`}
+                href={workOrderDetailHref(wo.id)}
                 className="block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div data-testid={`wo-item-${wo.id}`} className="flex items-center justify-between">
@@ -98,7 +99,7 @@ export function MyWorkOrdersList() {
             {upcomingOrders.map(wo => (
               <Link
                 key={wo.id}
-                href={`/work-orders/detail?id=${wo.id}`}
+                href={workOrderDetailHref(wo.id)}
                 className="block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div data-testid={`wo-item-${wo.id}`} className="flex items-center justify-between">

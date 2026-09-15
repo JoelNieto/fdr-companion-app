@@ -89,7 +89,7 @@ export function PushProvider({ children }: { children: React.ReactNode }) {
               onDismiss={() => setBanner(null)}
               onNavigate={() => {
                 setBanner(null);
-                window.location.href = `/work-orders/${banner.id}`;
+                window.location.href = `/work-orders/detail?id=${banner.id}`;
               }}
             />
           )}

@@ -38,7 +38,7 @@ export function AssignmentBanner({ workOrder, onDismiss, onNavigate }: Assignmen
           <Button
             size="sm"
             onClick={onNavigate}
-            className="bg-white text-blue-600 hover:bg-white/90"
+            className="bg-white text-blue-600! hover:bg-white/90"
           >
             View
           </Button>

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { addOutboxItem } from '@/features/offline/lib/outbox-store';
-import { useOnlineStatus } from './use-online-status.hook';
-import { useFeedback } from '@/lib/feedback';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addOutboxItem } from "@/features/offline/lib/outbox-store";
+import { useOnlineStatus } from "./use-online-status.hook";
+import { useFeedback } from "@/lib/feedback";
 
 interface OfflineMutationOptions<TData, TVariables> {
   mutationFn: (variables: TVariables) => Promise<TData>;
-  outboxType: 'status_change' | 'call_outcome';
+  outboxType: "status_change" | "call_outcome";
   getDescription: (variables: TVariables) => string;
   getPayload: (variables: TVariables) => Record<string, unknown>;
   onSuccess?: (data: TData, variables: TVariables) => void;
@@ -24,7 +24,7 @@ export function useOfflineMutation<TData, TVariables>({
 }: OfflineMutationOptions<TData, TVariables>) {
   const { isOnline } = useOnlineStatus();
   const { showSuccess, showError } = useFeedback();
-  
+
   return useMutation({
     mutationFn: async (variables: TVariables) => {
       if (!isOnline) {
@@ -34,26 +34,30 @@ export function useOfflineMutation<TData, TVariables>({
           type: outboxType,
           payload: getPayload(variables),
           description: getDescription(variables),
-          state: 'pending' as const,
+          state: "pending" as const,
           createdAt: new Date().toISOString(),
         };
-        
+
         await addOutboxItem(outboxItem);
-        showSuccess('Action queued for when online');
-        
+        showSuccess("Action queued for when online");
+
         // Return optimistic result
         return { success: true, offline: true } as TData;
       }
-      
+
       return mutationFn(variables);
     },
     onSuccess: (data, variables) => {
-      if (data && typeof data === 'object' && 'offline' in data && data.offline) {
+      if (
+        data &&
+        typeof data === "object" &&
+        "offline" in data &&
+        data.offline
+      ) {
         // Already showed success for offline
         return;
       }
       onSuccess?.(data, variables);
-      showSuccess('Action completed');
     },
     onError: (error, variables) => {
       onError?.(error as Error, variables);
@@ -77,15 +81,15 @@ export function useOptimisticUpdate<TData, TVariables>({
 }) {
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useFeedback();
-  
+
   return useMutation({
     mutationFn,
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey });
       const previousData = queryClient.getQueryData<TData>(queryKey);
-      
+
       queryClient.setQueryData(queryKey, getOptimisticData(variables));
-      
+
       return { previousData };
     },
     onError: (error, variables, context) => {
@@ -98,7 +102,6 @@ export function useOptimisticUpdate<TData, TVariables>({
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey });
       onSuccess?.(data, variables);
-      showSuccess('Action completed');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });

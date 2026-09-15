@@ -5,35 +5,69 @@ import { createWorkOrderSchema } from '@/features/jobs/schema/job.schema';
 import { callOutcomeSchema as contactCallOutcomeSchema } from '@/features/contacts/schema/contact.schema';
 import { advanceStatusSchema, blockWorkOrderSchema, resumeWorkOrderSchema, isLegalTransition } from '@/features/work-orders/schema/work-order.schema';
 
-let contacts = [...seedData.contacts];
-let jobs = [...seedData.jobs];
-let workOrders = [...seedData.workOrders];
+const STORAGE_KEY = 'field-companion-data';
+
+function loadFromStorage() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return null;
+}
+
+function saveToStorage(data: { contacts: Contact[]; jobs: Job[]; workOrders: WorkOrder[] }) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    // Ignore write errors (e.g., quota exceeded)
+  }
+}
+
+const storedData = loadFromStorage();
+const initialContacts = storedData?.contacts ?? [...seedData.contacts];
+const initialJobs = storedData?.jobs ?? [...seedData.jobs];
+const initialWorkOrders = storedData?.workOrders ?? [...seedData.workOrders];
+
+let contacts = initialContacts;
+let jobs = initialJobs;
+let workOrders = initialWorkOrders;
+
+function persist() {
+  saveToStorage({ contacts, jobs, workOrders });
+}
 
 function resetToSeed() {
   const data = getSeedData();
   contacts = [...data.contacts];
   jobs = [...data.jobs];
   workOrders = [...data.workOrders];
+  persist();
 }
 
 export const dataStore = {
   // Contacts
   getContacts: (): Contact[] => [...contacts].sort((a, b) => a.name.localeCompare(b.name)),
-  getContact: (id: string): Contact | undefined => contacts.find(c => c.id === id),
+  getContact: (id: string): Contact | undefined => contacts.find((c: Contact) => c.id === id),
   
   // Jobs
   getJobs: (): Job[] => [...jobs],
-  getJob: (id: string): Job | undefined => jobs.find(j => j.id === id),
-  getJobsByContact: (contactId: string): Job[] => jobs.filter(j => j.contactId === contactId),
-  getJobsByStatus: (status: Job['status']): Job[] => jobs.filter(j => j.status === status),
+  getJob: (id: string): Job | undefined => jobs.find((j: Job) => j.id === id),
+  getJobsByContact: (contactId: string): Job[] => jobs.filter((j: Job) => j.contactId === contactId),
+  getJobsByStatus: (status: Job['status']): Job[] => jobs.filter((j: Job) => j.status === status),
   
   // Work Orders
   getWorkOrders: (): WorkOrder[] => [...workOrders],
-  getWorkOrder: (id: string): WorkOrder | undefined => workOrders.find(wo => wo.id === id),
-  getWorkOrdersByJob: (jobId: string): WorkOrder[] => workOrders.filter(wo => wo.jobId === jobId),
-  getWorkOrdersByAssignee: (assignee: string): WorkOrder[] => workOrders.filter(wo => wo.assignee === assignee),
+  getWorkOrder: (id: string): WorkOrder | undefined => workOrders.find((wo: WorkOrder) => wo.id === id),
+  getWorkOrdersByJob: (jobId: string): WorkOrder[] => workOrders.filter((wo: WorkOrder) => wo.jobId === jobId),
+  getWorkOrdersByAssignee: (assignee: string): WorkOrder[] => workOrders.filter((wo: WorkOrder) => wo.assignee === assignee),
   getWorkOrdersByAssigneeAndStatus: (assignee: string, excludeStatus?: WorkOrder['status']): WorkOrder[] => 
-    workOrders.filter(wo => wo.assignee === assignee && wo.status !== excludeStatus),
+    workOrders.filter((wo: WorkOrder) => wo.assignee === assignee && wo.status !== excludeStatus),
   
   // Mutations
   createWorkOrder: (input: CreateWorkOrderInput): ApiEnvelope<WorkOrder> => {
@@ -54,6 +88,7 @@ export const dataStore = {
     };
     
     workOrders.push(newWO);
+    persist();
     return createEnvelope(newWO, 'Work order created successfully');
   },
   
@@ -70,6 +105,7 @@ export const dataStore = {
     };
     
     workOrders.push(newWO);
+    persist();
     return newWO;
   },
   
@@ -79,7 +115,7 @@ export const dataStore = {
       return createErrorEnvelope<Note>('Validation failed');
     }
     
-    const contact = contacts.find(c => c.id === validation.data.contactId);
+    const contact = contacts.find((c: Contact) => c.id === validation.data.contactId);
     if (!contact) {
       return createErrorEnvelope<Note>('Contact not found');
     }
@@ -101,20 +137,20 @@ export const dataStore = {
       return createErrorEnvelope<WorkOrder>('Validation failed');
     }
     
-    const woIndex = workOrders.findIndex(wo => wo.id === validation.data.workOrderId);
+    const woIndex = workOrders.findIndex((wo: WorkOrder) => wo.id === validation.data.workOrderId);
     if (woIndex === -1) {
       return createErrorEnvelope<WorkOrder>('Work order not found');
     }
     
     const wo = workOrders[woIndex];
-    const currentStatus = wo.status;
+    const currentStatus = wo.status as WorkOrder['status'];
     const transitions: Record<WorkOrder['status'], WorkOrder['status']> = {
       scheduled: 'en_route',
       en_route: 'on_site',
       on_site: 'done',
-      blocked: 'blocked', // Can't advance from blocked
+      blocked: 'blocked',
       done: 'done',
-    };
+    } as const;
     
     const nextStatus = transitions[currentStatus];
     if (!nextStatus || nextStatus === currentStatus) {
@@ -122,6 +158,7 @@ export const dataStore = {
     }
     
     wo.status = nextStatus;
+    persist();
     return createEnvelope({ ...wo }, `Status advanced to ${nextStatus.replace('_', ' ')}`);
   },
   
@@ -131,7 +168,7 @@ export const dataStore = {
       return createErrorEnvelope<WorkOrder>('Validation failed');
     }
     
-    const woIndex = workOrders.findIndex(wo => wo.id === validation.data.workOrderId);
+    const woIndex = workOrders.findIndex((wo: WorkOrder) => wo.id === validation.data.workOrderId);
     if (woIndex === -1) {
       return createErrorEnvelope<WorkOrder>('Work order not found');
     }
@@ -144,6 +181,7 @@ export const dataStore = {
     wo.blockedFromStatus = wo.status;
     wo.blockedReason = validation.data.reason;
     wo.status = 'blocked';
+    persist();
     
     return createEnvelope({ ...wo }, 'Work order blocked');
   },
@@ -154,7 +192,7 @@ export const dataStore = {
       return createErrorEnvelope<WorkOrder>('Validation failed');
     }
     
-    const woIndex = workOrders.findIndex(wo => wo.id === validation.data.workOrderId);
+    const woIndex = workOrders.findIndex((wo: WorkOrder) => wo.id === validation.data.workOrderId);
     if (woIndex === -1) {
       return createErrorEnvelope<WorkOrder>('Work order not found');
     }
@@ -168,12 +206,13 @@ export const dataStore = {
     wo.status = previousStatus;
     wo.blockedFromStatus = undefined;
     wo.blockedReason = undefined;
+    persist();
     
     return createEnvelope({ ...wo }, `Resumed to ${previousStatus.replace('_', ' ')}`);
   },
   
   addPhoto: (workOrderId: string, uri: string): ApiEnvelope<Photo> => {
-    const woIndex = workOrders.findIndex(wo => wo.id === workOrderId);
+    const woIndex = workOrders.findIndex((wo: WorkOrder) => wo.id === workOrderId);
     if (woIndex === -1) {
       return createErrorEnvelope<Photo>('Work order not found');
     }
@@ -190,6 +229,7 @@ export const dataStore = {
     };
     
     wo.photos.push(newPhoto);
+    persist();
     return createEnvelope(newPhoto, 'Photo added');
   },
   

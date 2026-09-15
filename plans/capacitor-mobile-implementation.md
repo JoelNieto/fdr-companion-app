@@ -107,11 +107,11 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [x] Add deep link handler in `app/layout.tsx` for `fieldcompanion://` URLs
 
 ### 6. iOS Project Configuration
-- [ ] Open `ios/App/App.xcworkspace` in Xcode
-- [ ] Configure signing (automatic for simulator)
-- [ ] Add `CallMonitor` plugin to Xcode project (auto via `cap sync`)
-- [ ] Verify `Info.plist` has required permissions
-- [ ] Test build: `npx cap run ios` (simulator)
+- [x] Open `ios/App/App.xcworkspace` in Xcode
+- [x] Configure signing (automatic for simulator)
+- [x] Add `CallMonitor` plugin to Xcode project (auto via `cap sync`)
+- [x] Verify `Info.plist` has required permissions
+- [x] Test build: `npx cap run ios` (simulator)
 
 ### 7. Android Project (Minimal - for future)
 - [x] Add Android platform: `npx cap add android`
@@ -119,10 +119,10 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [x] Verify `cap sync` works for both platforms
 
 ### 8. ADRs (Decision Records)
-- [ ] `docs/decisions/01-push-transport.md` → Local Notifications
-- [ ] `docs/decisions/02-custom-plugin-scope.md` → call-monitor iOS-only
-- [ ] `docs/decisions/03-offline-storage.md` → IndexedDB + outbox + Network plugin
-- [ ] `docs/decisions/04-shell-strategy.md` → Bundled Static Export
+- [x] `docs/decisions/01-push-transport.md` → Local Notifications
+- [x] `docs/decisions/02-custom-plugin-scope.md` → call-monitor iOS-only
+- [x] `docs/decisions/03-offline-storage.md` → IndexedDB + outbox + Network plugin
+- [x] `docs/decisions/04-shell-strategy.md` → Bundled Static Export
 
 ### 9. PROMPTS.md Auto-Capture Mechanism
 - [x] Create `.kilo/hooks/capture-prompt.js` (and `.sh` wrapper)
@@ -131,11 +131,11 @@ Add Capacitor 8 mobile shell with custom `call-monitor` plugin (iOS Swift), Loca
 - [x] Document in README
 
 ### 10. Testing (Vitest)
-- [ ] Test outbox logic (enqueue → replay → failure → retry)
-- [ ] Test work order status transitions (legal/illegal)
-- [ ] Test query hook + mutation hook via `renderHook`
-- [ ] Test `call-monitor` web fallback
-- [ ] Add tests for Local Notifications scheduling
+- [x] Test outbox logic (enqueue → replay → failure → retry)
+- [x] Test work order status transitions (legal/illegal)
+- [x] Test query hook + mutation hook via `renderHook`
+- [x] Test `call-monitor` web fallback
+- [x] Add tests for Local Notifications scheduling
 
 ### 10. Documentation
 - [ ] Update `README.md`:
